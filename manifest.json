@@ -13,6 +13,7 @@
     "permissions": [
       "notifications",
       "background",
+      "tabs",
       "https://*.pagerduty.com/*"
     ],
     "background": {
@@ -37,6 +38,7 @@
         "all_frames": false
     }],
     "web_accessible_resources": [
-      "img/icon-256.png"
+      "img/icon-256.png",
+      "js/pd-notification.js"
     ]
 }
