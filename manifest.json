@@ -1,0 +1,35 @@
+{
+    "manifest_version": 2,
+    "name": "pageduty-chrome-notifications",
+    "version": "0.1",
+    "description": "Chrome notifications for PagerDuty incidents.",
+    "icons": {
+        "16": "img/icon-16.png",
+        "32": "img/icon-32.png",
+        "64": "img/icon-64.png",
+        "128": "img/icon-128.png",
+        "256": "img/icon-256.png"
+    },
+    "permissions": [
+      "notifications",
+      "https://*.pagerduty.com/*"
+    ],
+    "content_scripts" : [
+    {
+        "matches" : [
+          "https://*.pagerduty.com/",
+          "https://*.pagerduty.com/dashboard"
+        ],
+        "exclude_matches": [
+          "https://www.pagerduty.com/"
+        ],
+        "js" : [
+          "js/pd-chrome-notification.js"
+        ],
+        "run_at": "document_end",
+        "all_frames": false
+    }],
+    "web_accessible_resources": [
+      "img/icon-256.png"
+    ]
+}
