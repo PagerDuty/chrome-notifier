@@ -15,11 +15,11 @@ function checkForNewIncidentNotifications()
     if (_incidents[i].notified) { continue; }
 
     // If triggered longer than _pdIgnoreLimit ago, then don't notify.
-    if (_incidents[i].attributes.createdOn.toDate().getTime()
+    /*if (_incidents[i].attributes.createdOn.toDate().getTime()
         <= ((new Date()) - _pdIgnoreLimit))
     {
       continue;
-    }
+    }*/
 
     // Normalize the incident object into a format our notification tooling expects.
     var incident = {
@@ -28,7 +28,8 @@ function checkForNewIncidentNotifications()
       "incidentDescription": "Service: " + _incidents[i].attributes.service.summary,
       "incidentUrl": _incidents[i].attributes.html_url,
       "incidentUrgency": _incidents[i].attributes.urgency,
-      "incidentCreated": _incidents[i].attributes.created_at
+      "incidentCreated": _incidents[i].attributes.created_at,
+      "incidentDomain": _incidents[i].attributes.html_url.replace('https://','').split(/[/?#]/)[0]
     }
 
     // Send a message to the extension to trigger the notification.
