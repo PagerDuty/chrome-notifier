@@ -21,10 +21,7 @@ function setupNotifications()
   }
 
   // Only if permission is now granted can we enable notifications.
-  if (Notification.permission == "granted")
-  {
-    pdNotificationsEnabled = true;
-  }
+  pdNotificationsEnabled = (Notification.permission == "granted");
 }
 
 // This will trigger a PagerDuty desktop notification.
@@ -37,7 +34,7 @@ function triggerNotification(incidentId, title, description)
   var notification = new Notification(
     title,
     {
-      icon: "",
+      icon: "img/icon-256.png",
       body: description
     },
     function()
