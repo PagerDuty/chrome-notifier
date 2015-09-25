@@ -14,6 +14,9 @@ function checkForNewIncidentNotifications()
     // Ignore if we've already notified this session.
     if (_incidents[i].notified) { continue; }
 
+    // Ignore unless in triggered state.
+    if (_incidents[i].attributes.status !== "triggered") { continue; }
+
     // If triggered longer than _pdIgnoreLimit ago, then don't notify.
     /*if (_incidents[i].attributes.createdOn.toDate().getTime()
         <= ((new Date()) - _pdIgnoreLimit))
