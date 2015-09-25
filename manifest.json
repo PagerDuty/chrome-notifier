@@ -12,8 +12,15 @@
     },
     "permissions": [
       "notifications",
+      "background",
       "https://*.pagerduty.com/*"
     ],
+    "background": {
+      "scripts": [
+        "js/pd-notification-background.js"
+      ],
+      "persistent": true
+    },
     "content_scripts" : [
     {
         "matches" : [
@@ -24,7 +31,7 @@
           "https://www.pagerduty.com/"
         ],
         "js" : [
-          "js/pd-chrome-notification.js"
+          "js/pd-notification-content.js"
         ],
         "run_at": "document_end",
         "all_frames": false
