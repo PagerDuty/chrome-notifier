@@ -6,8 +6,9 @@ function triggerNotification(incidentId, title, description)
 
   chrome.runtime.sendMessage({
     "incidentId": incidentId,
-    "title": title,
-    "description": description
+    "incidentTitle": title,
+    "incidentDescription": description,
+    "incidentTime": Date.now()
   });
 }
 

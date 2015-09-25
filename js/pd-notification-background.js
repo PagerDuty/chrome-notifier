@@ -6,9 +6,19 @@ chrome.runtime.onMessage.addListener(
       'pdincident-' + request.incidentId,
       {
         type: "basic",
-        title: request.title,
-        message: request.description,
-        iconUrl: chrome.extension.getURL("img/icon-256.png")
+        title: request.incidentTitle,
+        message: request.incidentDescription,
+        eventTime: request.incidentTime,
+        iconUrl: chrome.extension.getURL("img/icon-256.png"),
+        priority: 2,
+        buttons: [
+          {
+            title: "Acknowledge"
+          },
+          {
+            title: "Resolve"
+          }
+        ]
       }
     );
    }
