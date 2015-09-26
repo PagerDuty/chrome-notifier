@@ -3,148 +3,165 @@
 
 // TODO use chrome.alarms instead??
 
+// Configuration
+var _pdUserAgent = "pd-chrome-notifier-0.1"; // Will be in the X-Requested-With header of requests.
+
 // Helper wrappers for HTTP methods.
 function HTTP()
 {
-  this.GET = function GET(url, callback)
-  {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.onreadystatechange = function()
+    this.GET = function GET(url, callback)
     {
-      if (xhr.readyState == 4)
-      {
-        try
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("X-Requested-With", _pdUserAgent);
+        xhr.onreadystatechange = function()
         {
-          callback(JSON.parse(xhr.responseText));
-        }
-        catch(e)
-        {
-          // Ignore any parsing errors and carry on.
-        }
-      }
-    };
-    xhr.send();
-  }
+            if (xhr.readyState == 4)
+            {
+                try
+                {
+                    callback(JSON.parse(xhr.responseText));
+                }
+                catch(e)
+                {
+                    // Ignore any parsing errors and carry on.
+                }
+            }
+        };
+        xhr.send();
+    }
 
-  this.PUT = function PUT(url)
-  {
-    var xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.send();
-  }
+    this.PUT = function PUT(url)
+    {
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", url, true);
+        xhr.setRequestHeader("X-Requested-With", _pdUserAgent);
+        xhr.send();
+    }
 }
 
 function PagerDutyNotifier()
 {
-  // Members
-  var self = this; // Self-reference
+    // Members
+    var self = this; // Self-reference
 
-  self.pollInterval = 15; // Number of seconds between checking for new notifications.
-  self.account      = ""; // The PagerDuty account name you want to notify on.
+    self.account          = "";    // The PagerDuty account subdomain to check.
+    self.apiKey           = "";    // Optional API key to not require active session.
+    self.pollInterval     = 15;    // Number of seconds between checking for new notifications.
+    self.includeLowUgency = false; // Whether to include low urgency incidents.
 
-  self.http   = new HTTP(); // Helper for HTTP calls.
-  self.poller = null;       // This points to the interval function so we can clear it if needed.
+    self.http   = new HTTP(); // Helper for HTTP calls.
+    self.poller = null;       // This points to the interval function so we can clear it if needed.
 
-  // Ctor
-  self._construct = function _construct()
-  {
-    self.setupPoller();
-    self.setupEventHandlers();
-    self.loadConfiguration();
-  }
-
-  // This loads any configuration we have stored with chrome.storage
-  self.loadConfiguration = function loadConfiguration()
-  {
-    chrome.storage.sync.get(
+    // Ctor
+    self._construct = function _construct()
     {
-      pdAccountId: '',
-      pdPollInterval: 15
-    },
-    function(items)
+        self.setupPoller();
+        self.setupEventHandlers();
+        self.loadConfiguration();
+    }
+
+    // This loads any configuration we have stored with chrome.storage
+    self.loadConfiguration = function loadConfiguration()
     {
-      self.pollInterval = items.pdPollInterval;
-      self.account = items.pdAccountId;
-    });
-  }
+        chrome.storage.sync.get(
+        {
+            pdAccountSubdomain: '',
+            pdAPIKey: null,
+            pdPollInterval: 15,
+            pdIncludeLowUrgency: false
+        },
+        function(items)
+        {
+            self.account          = items.pdAccountSubdomain;
+            self.apiKey           = items.pdAPIKey;
+            self.pollInterval     = items.pdPollInterval;
+            self.includeLowUgency = items.pdIncludeLowUrgency;
+        });
+    }
 
-  // This will set up the poller process.
-  self.setupPoller = function setupPoller()
-  {
-    self.poller = setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
-    self.pollNewIncidents();
-  }
-
-  // This will set up any event handlers we need.
-  self.setupEventHandlers = function setupEventHandlers()
-  {
-    // Add event handlers for button clicks to make the necessary API calls.
-    chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
+    // This will set up the poller process.
+    self.setupPoller = function setupPoller()
     {
-      switch (buttonIndex)
-      {
-        case 0: // Acknowledge
-          self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/acknowledge');
-          break;
+        self.poller = setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
+        self.pollNewIncidents();
+    }
 
-        case 1: // Resolve
-          self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/resolve');
-          break;
-      }
-    });
-
-    // Add event handler for when a notification is clicked to load the incident in a new tab.
-    chrome.notifications.onClicked.addListener(function(notificationId)
+    // This will set up any event handlers we need.
+    self.setupEventHandlers = function setupEventHandlers()
     {
-      window.open('https://' + self.account + '.pagerduty.com/incidents/' + notificationId);
-    });
-  }
+        // Add event handlers for button clicks to make the necessary API calls.
+        chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
+        {
+            switch (buttonIndex)
+            {
+                case 0: // Acknowledge
+                    self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/acknowledge');
+                    break;
 
-  // This is the poller action, which will trigger an API request and then pass any incidents
-  // it gets to the parsing function.
-  self.pollNewIncidents = function pollNewIncidents()
-  {
-    // Sanity check that an account has been set.
-    if (self.account == "") { return; }
+                case 1: // Resolve
+                    self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/resolve');
+                    break;
+            }
+        });
 
-    // We only want events triggered since we last polled.
-    var since = new Date();
-    since.setSeconds(since.getSeconds() - self.pollInterval);
+        // Add event handler for when a notification is clicked to load the incident in a new tab.
+        chrome.notifications.onClicked.addListener(function(notificationId)
+        {
+            window.open('https://' + self.account + '.pagerduty.com/incidents/' + notificationId);
+        });
+    }
 
-    self.http.GET('https://' + self.account + '.pagerduty.com/api/v1/incidents?'
-                    + 'status=triggered&'
-                    + 'urgency=high&'
-                    + 'since=' + since.toISOString(),
-                  self.parseIncidents);
-  }
-
-  // This will parse the AJAX response and trigger notifications for each incident.
-  self.parseIncidents = function parseIncidents(data)
-  {
-    for (var i in data.incidents) { self.triggerNotification(data.incidents[i]); }
-  }
-
-  // This will trigger the actual notification based on an incident object.
-  self.triggerNotification = function triggerNotification(incident)
-  {  
-    chrome.notifications.create(incident.id,
+    // This is the poller action, which will trigger an API request and then pass any incidents
+    // it gets to the parsing function.
+    self.pollNewIncidents = function pollNewIncidents()
     {
-      type: "basic",
-      title: incident.trigger_summary_data.subject,
-      message: "Service: " + incident.service.name,
-      iconUrl: chrome.extension.getURL("img/icon-256.png"),
-      priority: 2,
-      isClickable: true,
-      contextMessage: incident.html_url.replace('https://','').split(/[/?#]/)[0],
-      buttons: [
-        { title: "Acknowledge" },
-        { title: "Resolve" }
-      ]
-    });
-  }
+        // Sanity check that an account has been set.
+        if (self.account == "") { return; }
 
-  self._construct();
+        // We only want events triggered since we last polled.
+        var since = new Date();
+        since.setSeconds(since.getSeconds() - self.pollInterval);
+
+        // Construct the URL
+        var url = 'https://' + self.account + '.pagerduty.com/api/v1/incidents?'
+                + 'status=triggered&'
+                + 'since=' + since.toISOString() + '&';
+
+        // Limit to high urgency if that's all the user wants.
+        if (!self.includeLowUgency) { url = url + 'urgency=high&'; }
+
+        // Make the request.
+        self.http.GET(url, self.parseIncidents);
+    }
+
+    // This will parse the AJAX response and trigger notifications for each incident.
+    self.parseIncidents = function parseIncidents(data)
+    {
+        for (var i in data.incidents) { self.triggerNotification(data.incidents[i]); }
+    }
+
+    // This will trigger the actual notification based on an incident object.
+    self.triggerNotification = function triggerNotification(incident)
+    {  
+        chrome.notifications.create(incident.id,
+        {
+            type: "basic",
+            iconUrl: chrome.extension.getURL("img/icon-256.png"),
+            title: incident.trigger_summary_data.subject,
+            message: "Service: " + incident.service.name,
+            contextMessage: incident.urgency.charAt(0).toUpperCase() + incident.urgency.slice(1) + " Urgency",
+            // incident.html_url.replace('https://','').split(/[/?#]/)[0],
+            priority: 2,
+            isClickable: true,
+            buttons: [
+                { title: "Acknowledge" },
+                { title: "Resolve" }
+            ]
+        });
+    }
+
+    self._construct();
 }
 
 var _pdNotifier = new PagerDutyNotifier();

@@ -11,19 +11,19 @@
         "256": "img/icon-256.png"
     },
     "permissions": [
-      "notifications",
-      "background",
-      "storage",
-      "https://*.pagerduty.com/api/v1/*"
+        "notifications",
+        "background",
+        "storage",
+        "https://*.pagerduty.com/api/v1/*"
     ],
     "options_page": "html/options.html",
     "background": {
-      "scripts": [
-        "js/notifications.js"
-      ],
-      "persistent": true
+        "scripts": [
+            "js/notifications.js"
+        ],
+        "persistent": true
     },
     "web_accessible_resources": [
-      "img/icon-256.png"
+        "img/icon-256.png"
     ]
 }

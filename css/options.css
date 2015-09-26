@@ -1,0 +1,117 @@
+/* Main Layout
+***************************************************************************************************/
+body {
+    margin: 1em;
+}
+
+main {
+    padding: 0em 0em 0em 3em;
+}
+
+/* Typography
+***************************************************************************************************/
+#title {
+    background: url("../img/icon-64.png") center left no-repeat;
+    background-size: contain;
+    padding-left: 1.5em;
+}
+
+h2 {
+    margin-top: 1.5em;
+}
+
+/* Inputs
+***************************************************************************************************/
+input[type=text],
+input[type=number] {
+    margin-bottom: 3px;
+    border: 1px solid #d9d9d9;
+    border-top: 1px solid #c0c0c0;
+    border-radius: 0px;
+    padding: 0.4em;
+    font-family: inherit;
+
+    -webkit-transition: all 0.2s ease-in-out;
+}
+
+input.bad {
+    border: 1px solid #f00;
+}
+
+input[type=text] {
+    font-family: monospace;
+}
+
+input[type=number] {
+    width: 4em;
+}
+
+input[type=text]:hover,
+input[type=number]:hover {
+    border: 1px solid #b9b9b9;
+    border-top: 1px solid #a0a0a0;
+}
+
+input[type=text]:focus,
+input[type=number]:focus {
+    outline: none;
+    border: 1px solid #888;
+    box-shadow: 0px 0px 1px 1px rgba(50, 50, 50, 0.4);
+    border-radius: 2px;
+}
+
+button {
+    border: 1px solid #a9a9a9;
+    padding: 3px 5px 3px 5px;
+    background: #f5f5f5;
+    border-radius: 3px;
+    background-image: -webkit-gradient(
+       linear,
+       left bottom,
+       left top,
+       color-stop(0.44, rgb(223,223,223)),
+       color-stop(0.72, rgb(245,245,245))
+    );
+    -webkit-transition: all 0.2s ease-in-out;
+}
+
+button:active {
+    background: #dfdfdf;
+    background-image: -webkit-gradient(
+       linear,
+       left bottom,
+       left top,
+       color-stop(0.44, rgb(245,245,245)),
+       color-stop(0.72, rgb(223,223,223))
+    );
+}
+
+button:hover {
+    border: 1px solid #7f7f7f;
+}
+
+/* Options
+***************************************************************************************************/
+.option {
+    display: block;
+    margin-bottom: 0.5em;
+}
+  
+.option label {
+    display: inline-block;
+    width: 18em;
+    text-align: right;
+    font-weight: bold;
+    padding-right: 0.5em;
+}
+
+.info {
+    color: #aaa;
+    font-style: italic;
+    padding-left: 0.5em;
+}
+
+.required {
+    color: #f00;
+}
+
