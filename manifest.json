@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "pageduty-chrome-notifications",
+    "name": "PagerDuty Desktop Notifications",
     "version": "0.1",
     "description": "Chrome notifications for PagerDuty incidents.",
     "icons": {
