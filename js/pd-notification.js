@@ -56,10 +56,12 @@ window.addEventListener("message", function(event)
   {
     case "pagerduty_acknowledge":
       acknowledgeIncident(event.data.incident.incidentId);
+      app.restart(); // Reload page.
       break;
 
     case "pagerduty_resolve":
       acknowledgeIncident(event.data.incident.incidentId);
+      app.restart(); // Reload page.
       break;
   }
 });
