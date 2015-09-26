@@ -1,5 +1,15 @@
 // This provides all of the logic for handling user configuration of the extension.
 
+// Helper functions to obfuscate the API key on the UI, and detect if it's obfuscated.
+function obfuscateAPIKey(key)
+{
+    return "••••••••••••••••" + key.slice(16);
+}
+function isAPIKeyObfuscated(key)
+{
+    return key.slice(0, 16) == "••••••••••••••••";
+}
+
 // Add an event listener to restore previously save configuration.
 document.addEventListener('DOMContentLoaded', function ()
 {
@@ -9,15 +19,17 @@ document.addEventListener('DOMContentLoaded', function ()
         pdAccountSubdomain: '',
         pdAPIKey: '',
         pdPollInterval: 15,
-        pdIncludeLowUrgency: false
+        pdIncludeLowUrgency: false,
+        pdRemoveButtons: false
     },
     function(items)
     {
         // Update the page elements appropriately.
         getElement('account-subdomain').value = items.pdAccountSubdomain;
-        getElement('api-key').value           = items.pdAPIKey;
+        getElement('api-key').value           = obfuscateAPIKey(items.pdAPIKey);
         getElement('poll-interval').value     = items.pdPollInterval;
         getElement('low-urgency').checked     = items.pdIncludeLowUrgency;
+        getElement('remove-buttons').checked  = items.pdRemoveButtons;
     });
 });
 
@@ -26,12 +38,18 @@ document.getElementById('save').addEventListener('click', function ()
 {
     if (!validateConfiguration()) { return; }
 
+    // If API key was updated, set it. If still obfuscated, don't.
+    if (!isAPIKeyObfuscated(getElement('api-key').value))
+    {
+        chrome.storage.sync.set({ pdAPIKey: getElement('api-key').value });
+    }
+
     chrome.storage.sync.set(
     {
         pdAccountSubdomain:  getElement('account-subdomain').value,
-        pdAPIKey:            getElement('api-key').value,
         pdPollInterval:      getElement('poll-interval').value,
-        pdIncludeLowUrgency: getElement('low-urgency').checked
+        pdIncludeLowUrgency: getElement('low-urgency').checked,
+        pdRemoveButtons:     getElement('remove-buttons').checked
     },
     function()
     {

@@ -10,7 +10,7 @@
 
     <main>
         <h2>1. Account Settings</h2>
-        <p>Provide the account subdomain, and optionally a read-only API key for your account. If you do not provide an API key, then you will only receive notifications if your session is still active for your subdomain.</p>
+        <p>Provide the account subdomain, and optionally a read/write API key for your account. (<em>If you do not provide an API key, then you will only receive notifications if your session is still active for your subdomain. If you provide a read-only API key, you will still get notifications, but you will be unable to acknowledge or resolve them from the notification popup</em>. You can remove the action buttons below if you prefer to use read-only credentials).</p>
         <div class="option">
         <label>Account Subdomain <span class="required">*</span></label>
             <input id="account-subdomain" type="text" size="20" />
@@ -20,7 +20,7 @@
         <div class="option">
             <label>PagerDuty API Key</label>
             <input id="api-key" type="text" size="20" value="" />
-            <span class="info">Optionally provide a <strong>read-only</strong> API key your account. Should be 20 characters.</span>
+            <span class="info">Optionally provide an API key your account. Should be 20 characters.</span>
         </div>
 
         <h2>2. Notification Settings</h2>
@@ -34,10 +34,15 @@
             <label>Include low urgency incidents?</label>
             <input id="low-urgency" type="checkbox" />
         </div>
+        <div class="option">
+            <label>Remove Ack/Resolve buttons?</label>
+            <input id="remove-buttons" type="checkbox" />
+            <span class="info">If you only want to use a read-only API key, then you can select this option to remove the action buttons.</span>
+        </div>
 
         <h2>3. Save</h2>
         <p>Make sure to save your settings if you update anything.</p>
-        <button id="save">Save</button>
+        <button id="save">Save &amp; Close</button>
     </main>
 
     <script src="../js/options.js"></script>
