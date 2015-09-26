@@ -26,7 +26,7 @@ function checkForNewIncidentNotifications()
 
     // Normalize the incident object into a format our notification tooling expects.
     var incident = {
-      "incidentId": _incidents[i].cid,
+      "incidentId": _incidents[i].id,
       "incidentTitle": _incidents[i].attributes.summary,
       "incidentDescription": "Service: " + _incidents[i].attributes.service.summary,
       "incidentUrl": _incidents[i].attributes.html_url,
@@ -43,6 +43,18 @@ function checkForNewIncidentNotifications()
       "incident": incident
     }, "*");
   }
+}
+
+// Helper method to acknowledge an incident.
+function acknowledgeIncident(incidentId)
+{
+  $.ajax('/api/v1/incident/' + incidentId + '/acknowledge', {method: 'PUT'});
+}
+
+// Helper method to resolve an incident.
+function resolveIncident(incidentId)
+{
+  $.ajax('/api/v1/incident/' + incidentId + '/resolve', {method: 'PUT'});
 }
 
 // Check every so often.

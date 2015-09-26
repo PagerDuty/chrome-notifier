@@ -17,12 +17,8 @@ chrome.runtime.onMessage.addListener(
       isClickable: true,
       contextMessage: request.incidentDomain,
       buttons: [
-        {
-          title: "Acknowledge"
-        },
-        {
-          title: "Resolve"
-        }
+        { title: "Acknowledge" },
+        { title: "Resolve" }
       ]
     });
 
@@ -39,9 +35,13 @@ chrome.notifications.onButtonClicked.addListener(function(notificationId, button
   {
     case 0: // Acknowledge
       console.log("Acknowledging incident", notif);
+      acknowledgeIncident(notif.id);
       break;
+
     case 1: // Resolve
       console.log("Resolving incident", notif);
+      // TODO
+
       break;
   }
 });

@@ -26,7 +26,8 @@
     {
         "matches" : [
           "https://*.pagerduty.com/",
-          "https://*.pagerduty.com/dashboard"
+          "https://*.pagerduty.com/dashboard",
+          "https://*.pagerduty.com/incidents"
         ],
         "exclude_matches": [
           "https://www.pagerduty.com/"
