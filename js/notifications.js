@@ -1,7 +1,7 @@
 // Simple script to poll PagerDuty API for new incidents, and trigger a Chrome notification for
 // any it finds. Will also give user ability to ack/resolve incidents right from the notifs.
 
-// TODO use chrome.alarms instead
+// TODO use chrome.alarms instead??
 
 // Helper wrappers for HTTP methods.
 function HTTP()
@@ -43,9 +43,8 @@ function PagerDutyNotifier()
   self.pollInterval = 15; // Number of seconds between checking for new notifications.
   self.account      = ""; // The PagerDuty account name you want to notify on.
 
-  self.http      = new HTTP();   // Helper for HTTP calls.
-  self.incidents = new Object(); // Why the fuck doesn't chrome.notifications have a .get(id) method?
-                                 // Fuck it, just store ourselves for now.
+  self.http   = new HTTP(); // Helper for HTTP calls.
+  self.poller = null;       // This points to the interval function so we can clear it if needed.
 
   // Ctor
   self._construct = function _construct()
@@ -73,7 +72,7 @@ function PagerDutyNotifier()
   // This will set up the poller process.
   self.setupPoller = function setupPoller()
   {
-    setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
+    self.poller = setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
     self.pollNewIncidents();
   }
 
@@ -83,15 +82,14 @@ function PagerDutyNotifier()
     // Add event handlers for button clicks to make the necessary API calls.
     chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
     {
-      var incident = self.incidents[notificationId];
       switch (buttonIndex)
       {
         case 0: // Acknowledge
-          self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + incident.id + '/acknowledge');
+          self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/acknowledge');
           break;
 
         case 1: // Resolve
-          self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + incident.id + '/resolve');
+          self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/resolve');
           break;
       }
     });
@@ -99,7 +97,7 @@ function PagerDutyNotifier()
     // Add event handler for when a notification is clicked to load the incident in a new tab.
     chrome.notifications.onClicked.addListener(function(notificationId)
     {
-      window.open(self.incidents[notificationId].html_url);
+      window.open('https://' + self.account + '.pagerduty.com/incidents/' + notificationId);
     });
   }
 
@@ -109,9 +107,6 @@ function PagerDutyNotifier()
   {
     // Sanity check that an account has been set.
     if (self.account == "") { return; }
-
-    // Clear any previous incident state we were storing
-    self.incidents = new Object();
 
     // We only want events triggered since we last polled.
     var since = new Date();
@@ -132,7 +127,7 @@ function PagerDutyNotifier()
 
   // This will trigger the actual notification based on an incident object.
   self.triggerNotification = function triggerNotification(incident)
-  {
+  {  
     chrome.notifications.create(incident.id,
     {
       type: "basic",
@@ -147,9 +142,6 @@ function PagerDutyNotifier()
         { title: "Resolve" }
       ]
     });
-
-    // SUPERHACK: Update our internal list
-    self.incidents[incident.id] = incident;
   }
 
   self._construct();

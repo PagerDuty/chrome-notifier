@@ -6,7 +6,10 @@ function save_options()
     pdAccountId: document.getElementById('account-id').value,
     pdPollInterval: document.getElementById('poll-interval').value,
   },
-  function() { alert("Configuration saved."); });
+  function()
+  {
+    chrome.runtime.reload(); // Force a reload after config is updated.
+  });
 }
 
 // Restores select box and checkbox state using the preferences already stored.
