@@ -21,12 +21,12 @@ function HTTP()
         catch(e)
         {
           // Ignore any parsing errors and carry on.
-        } 
+        }
       }
     };
     xhr.send();
   }
-  
+
   this.PUT = function PUT(url)
   {
     var xhr = new XMLHttpRequest();
@@ -39,7 +39,7 @@ function PagerDutyNotifier()
 {
   // Members
   var self = this; // Self-reference
- 
+
   self.pollInterval = 15; // Number of seconds between checking for new notifications.
   self.account      = ""; // The PagerDuty account name you want to notify on.
 
@@ -47,17 +47,17 @@ function PagerDutyNotifier()
   self.incidents = new Object(); // Why the fuck doesn't chrome.notifications have a .get(id) method?
                                  // Fuck it, just store ourselves for now.
 
-  // Ctor  
+  // Ctor
   self._construct = function _construct()
-  {  
-    // Set up the poller.
-    setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
-    self.pollNewIncidents();  
-  
-    // Setup event listeners.
+  {
+    self.setupPoller();
     self.setupEventHandlers();
-    
-    // Retrieved saved configuration.
+    self.loadConfiguration();
+  }
+
+  // This loads any configuration we have stored with chrome.storage
+  self.loadConfiguration = function loadConfiguration()
+  {
     chrome.storage.sync.get(
     {
       pdAccountId: '',
@@ -69,10 +69,17 @@ function PagerDutyNotifier()
       self.account = items.pdAccountId;
     });
   }
-  
+
+  // This will set up the poller process.
+  self.setupPoller = function setupPoller()
+  {
+    setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
+    self.pollNewIncidents();
+  }
+
   // This will set up any event handlers we need.
   self.setupEventHandlers = function setupEventHandlers()
-  { 
+  {
     // Add event handlers for button clicks to make the necessary API calls.
     chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
     {
@@ -102,10 +109,10 @@ function PagerDutyNotifier()
   {
     // Sanity check that an account has been set.
     if (self.account == "") { return; }
-  
+
     // Clear any previous incident state we were storing
     self.incidents = new Object();
-  
+
     // We only want events triggered since we last polled.
     var since = new Date();
     since.setSeconds(since.getSeconds() - self.pollInterval);
@@ -122,7 +129,7 @@ function PagerDutyNotifier()
   {
     for (var i in data.incidents) { self.triggerNotification(data.incidents[i]); }
   }
-  
+
   // This will trigger the actual notification based on an incident object.
   self.triggerNotification = function triggerNotification(incident)
   {
@@ -144,7 +151,7 @@ function PagerDutyNotifier()
     // SUPERHACK: Update our internal list
     self.incidents[incident.id] = incident;
   }
-  
+
   self._construct();
 }
 
