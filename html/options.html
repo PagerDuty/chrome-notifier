@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PagerDuty Notifier Options</title>
+  
+  <style>
+    #title {
+      background: url("../img/icon-64.png") center left no-repeat;
+      background-size: contain;
+      padding-left: 1.5em;
+    }
+  
+    .option {
+      display: block;
+      margin-bottom: 0.5em;
+    }
+      
+    .option label {
+      display: inline-block;
+      width: 150px;
+      text-align: right;
+      font-weight: bold;
+      padding-right: 0.5em;
+    }
+    
+    .info {
+      color: #aaa;
+      font-style: italic;
+      font-size: 0.9em;
+    }
+  </style> 
+</head>
+<body>
+  <h1 id="title">PagerDuty Notifier Configuration</h1>
+
+  <div class="option">
+    <label>Account Subdomain</label>
+    <input type="text" id="account-id" />
+    <span class="info">You need to be logged into your account for this to work.</span>
+  </div>
+
+  <div class="option">
+    <label>Poll Interval (seconds)</label>
+    <input type="text" id="poll-interval" size="3" />
+    <span class="info">Recommend between 15-60 seconds.</span>
+  </div>
+
+  <button id="save">Save</button>
+
+  <script src="../js/options.js"></script>
+</body>
+</html>

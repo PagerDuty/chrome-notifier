@@ -13,11 +13,13 @@
     "permissions": [
       "notifications",
       "background",
+      "storage",
       "https://*.pagerduty.com/api/v1/*"
     ],
+    "options_page": "html/options.html",
     "background": {
       "scripts": [
-        "js/pd-notification-background.js"
+        "js/notifications.js"
       ],
       "persistent": true
     },

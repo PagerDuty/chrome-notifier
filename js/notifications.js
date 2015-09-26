@@ -40,22 +40,34 @@ function PagerDutyNotifier()
   // Members
   var self = this; // Self-reference
  
-  self.pollInterval = 15;         // Number of seconds between checking for new notifications.
-  self.account      = "pdt-rich"; // The PagerDuty account name you want to notify on.
+  self.pollInterval = 15; // Number of seconds between checking for new notifications.
+  self.account      = ""; // The PagerDuty account name you want to notify on.
 
+  self.http      = new HTTP();   // Helper for HTTP calls.
   self.incidents = new Object(); // Why the fuck doesn't chrome.notifications have a .get(id) method?
                                  // Fuck it, just store ourselves for now.
 
-  self.http      = new HTTP();
-
   // Ctor  
   self._construct = function _construct()
-  {
+  {  
     // Set up the poller.
     setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
     self.pollNewIncidents();  
   
+    // Setup event listeners.
     self.setupEventHandlers();
+    
+    // Retrieved saved configuration.
+    chrome.storage.sync.get(
+    {
+      pdAccountId: '',
+      pdPollInterval: 15
+    },
+    function(items)
+    {
+      self.pollInterval = items.pdPollInterval;
+      self.account = items.pdAccountId;
+    });
   }
   
   // This will set up any event handlers we need.
@@ -88,6 +100,9 @@ function PagerDutyNotifier()
   // it gets to the parsing function.
   self.pollNewIncidents = function pollNewIncidents()
   {
+    // Sanity check that an account has been set.
+    if (self.account == "") { return; }
+  
     // Clear any previous incident state we were storing
     self.incidents = new Object();
   
