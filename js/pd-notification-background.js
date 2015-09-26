@@ -1,26 +1,125 @@
-console.log("Background");
-// Why the fuck doesn't chrome.notifications have a .get(id) method?
-// Fuck it, just store ourselves for now.
-var _notifications = new Object();
+// Simple script to poll PagerDuty API for new incidents, and trigger a Chrome notification for
+// any it finds. Will also give user ability to ack/resolve incidents right from the notifs.
 
-// This will listen for messages from the content script, and trigger a new desktop notification.
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse)
+// TODO use chrome.alarms instead
+
+// Helper wrappers for HTTP methods.
+function HTTP()
+{
+  this.GET = function GET(url, callback)
   {
-    console.log("Background message received", request);
-    // Only listen for pagerduty_notification, ignore others.
-    if (!request.type || request.type !== "pagerduty_notification") { return; }
-    if (!request.data) { return; }
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function()
+    {
+      if (xhr.readyState == 4)
+      {
+        try
+        {
+          callback(JSON.parse(xhr.responseText));
+        }
+        catch(e)
+        {
+          // Ignore any parsing errors and carry on.
+        } 
+      }
+    };
+    xhr.send();
+  }
+  
+  this.PUT = function PUT(url)
+  {
+    var xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.send();
+  }
+}
 
-    chrome.notifications.create(request.data.incidentId,
+function PagerDutyNotifier()
+{
+  // Members
+  var self = this; // Self-reference
+ 
+  self.pollInterval = 15;         // Number of seconds between checking for new notifications.
+  self.account      = "pdt-rich"; // The PagerDuty account name you want to notify on.
+
+  self.incidents = new Object(); // Why the fuck doesn't chrome.notifications have a .get(id) method?
+                                 // Fuck it, just store ourselves for now.
+
+  self.http      = new HTTP();
+
+  // Ctor  
+  self._construct = function _construct()
+  {
+    // Set up the poller.
+    setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
+    self.pollNewIncidents();  
+  
+    self.setupEventHandlers();
+  }
+  
+  // This will set up any event handlers we need.
+  self.setupEventHandlers = function setupEventHandlers()
+  { 
+    // Add event handlers for button clicks to make the necessary API calls.
+    chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
+    {
+      var incident = self.incidents[notificationId];
+      switch (buttonIndex)
+      {
+        case 0: // Acknowledge
+          self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + incident.id + '/acknowledge');
+          break;
+
+        case 1: // Resolve
+          self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + incident.id + '/resolve');
+          break;
+      }
+    });
+
+    // Add event handler for when a notification is clicked to load the incident in a new tab.
+    chrome.notifications.onClicked.addListener(function(notificationId)
+    {
+      window.open(self.incidents[notificationId].html_url);
+    });
+  }
+
+  // This is the poller action, which will trigger an API request and then pass any incidents
+  // it gets to the parsing function.
+  self.pollNewIncidents = function pollNewIncidents()
+  {
+    // Clear any previous incident state we were storing
+    self.incidents = new Object();
+  
+    // We only want events triggered since we last polled.
+    var since = new Date();
+    since.setSeconds(since.getSeconds() - self.pollInterval);
+
+    self.http.GET('https://' + self.account + '.pagerduty.com/api/v1/incidents?'
+                    + 'status=triggered&'
+                    + 'urgency=high&'
+                    + 'since=' + since.toISOString(),
+                  self.parseIncidents);
+  }
+
+  // This will parse the AJAX response and trigger notifications for each incident.
+  self.parseIncidents = function parseIncidents(data)
+  {
+    for (var i in data.incidents) { self.triggerNotification(data.incidents[i]); }
+  }
+  
+  // This will trigger the actual notification based on an incident object.
+  self.triggerNotification = function triggerNotification(incident)
+  {
+    chrome.notifications.create(incident.id,
     {
       type: "basic",
-      title: request.data.incidentTitle,
-      message: request.data.incidentDescription,
+      title: incident.trigger_summary_data.subject,
+      message: "Service: " + incident.service.name,
       iconUrl: chrome.extension.getURL("img/icon-256.png"),
       priority: 2,
       isClickable: true,
-      contextMessage: request.data.incidentDomain,
+      contextMessage: incident.html_url.replace('https://','').split(/[/?#]/)[0],
       buttons: [
         { title: "Acknowledge" },
         { title: "Resolve" }
@@ -28,49 +127,10 @@ chrome.runtime.onMessage.addListener(
     });
 
     // SUPERHACK: Update our internal list
-    _notifications[request.data.incidentId] = request.data;
-
-    return true;
-   }
-);
-
-// Add event handlers for button clicks.
-chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
-{
-  console.log("button clicked");
-  var notif = _notifications[notificationId];
-  switch (buttonIndex)
-  {
-    case 0: // Acknowledge
-      console.log("Acknowledging incident", notif);
-
-      // This is a really hacky way to do this, but fuck it, works for now.
-      chrome.tabs.query({url: "https://*.pagerduty.com/*"}, function(tabs)
-      {
-        chrome.tabs.sendMessage(tabs[0].id,
-        {
-          "type": "pagerduty_acknowledge",
-          "data": notif
-        });
-      });
-      break;
-
-    case 1: // Resolve
-      console.log("Resolving incident", notif);
-      chrome.tabs.query({url: "https://*.pagerduty.com/*"}, function(tabs)
-      {
-        chrome.tabs.sendMessage(tabs[0].id,
-        {
-          "type": "pagerduty_resolve",
-          "data": notif
-        });
-      });
-      break;
+    self.incidents[incident.id] = incident;
   }
-});
+  
+  self._construct();
+}
 
-// Add event handler for when a notification is clicked.
-chrome.notifications.onClicked.addListener(function(notificationId)
-{
-  window.open(_notifications[notificationId].incidentUrl);
-});
+var _pdNotifier = new PagerDutyNotifier();
