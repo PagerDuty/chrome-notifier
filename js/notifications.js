@@ -151,12 +151,17 @@ function PagerDutyNotifier()
             title: incident.trigger_summary_data.subject,
             message: "Service: " + incident.service.name,
             contextMessage: incident.urgency.charAt(0).toUpperCase() + incident.urgency.slice(1) + " Urgency",
-            // incident.html_url.replace('https://','').split(/[/?#]/)[0],
             priority: 2,
             isClickable: true,
             buttons: [
-                { title: "Acknowledge" },
-                { title: "Resolve" }
+                {
+                    title: "Acknowledge",
+                    iconUrl: chrome.extension.getURL("img/icon-acknowledge.png")
+                },
+                {
+                    title: "Resolve",
+                    iconUrl: chrome.extension.getURL("img/icon-resolve.png")
+                }
             ]
         });
     }

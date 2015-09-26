@@ -22,8 +22,5 @@
             "js/notifications.js"
         ],
         "persistent": true
-    },
-    "web_accessible_resources": [
-        "img/icon-256.png"
-    ]
+    }
 }
