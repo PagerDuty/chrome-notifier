@@ -1,3 +1,4 @@
+console.log("Injected script");
 // This script is injected into the PagerDuty dashboard page, and will trigger the PagerDuty
 // desktop notifications using the pagerduty-chrome-notification extension.
 
@@ -36,7 +37,7 @@ function checkForNewIncidentNotifications()
     }
 
     // Send a message to the extension to trigger the notification.
-    console.log("Sending desktop notification for incident:", incident)
+    console.log("Sending desktop notification for incident", incident)
     _incidents[i].notified = true; // Mark original as notified so we don't trigger more than once.
     window.postMessage({
       "type": "pagerduty_notification",
@@ -45,16 +46,40 @@ function checkForNewIncidentNotifications()
   }
 }
 
+window.addEventListener("message", function(event)
+{
+  // Sanity checks
+  if (event.source != window || !event.data.type) { return; }
+
+  // What we do depends on what the message was...
+  switch(event.data.type)
+  {
+    case "pagerduty_acknowledge":
+      acknowledgeIncident(event.data.incident.incidentId);
+      break;
+
+    case "pagerduty_resolve":
+      acknowledgeIncident(event.data.incident.incidentId);
+      break;
+  }
+});
+
 // Helper method to acknowledge an incident.
 function acknowledgeIncident(incidentId)
 {
-  $.ajax('/api/v1/incident/' + incidentId + '/acknowledge', {method: 'PUT'});
+  $.ajax({
+    url: '/api/v1/incidents/' + incidentId + '/acknowledge',
+    type: 'PUT'
+  });
 }
 
 // Helper method to resolve an incident.
 function resolveIncident(incidentId)
 {
-  $.ajax('/api/v1/incident/' + incidentId + '/resolve', {method: 'PUT'});
+  $.ajax({
+    url: '/api/v1/incidents/' + incidentId + '/resolve',
+    type: 'PUT'
+  });
 }
 
 // Check every so often.
