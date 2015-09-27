@@ -58,7 +58,7 @@ function PagerDutyNotifier()
 {
     // Members
     var self              = this;  // Self-reference
-    self.account          = "";    // The PagerDuty account subdomain to check.
+    self.account          = null;  // The PagerDuty account subdomain to check.
     self.apiKey           = null;  // Optional API key to not require active session.
     self.pollInterval     = 15;    // Number of seconds between checking for new notifications.
     self.includeLowUgency = false; // Whether to include low urgency incidents.
@@ -72,8 +72,11 @@ function PagerDutyNotifier()
         // Load in configuration, and then set up everything we need.
         self.loadConfiguration(function()
         {
+            // If no account set up (first install), then do nothing. User will need to add
+            // config. Once they save, a reload will be triggered and things will kick off.
+            if (self.account == null || self.account == '') { return; }
+        
             self.http = new HTTP(self.apiKey);
-            self.setupEventHandlers();
             self.setupPoller();
         });
     }    
@@ -113,31 +116,26 @@ function PagerDutyNotifier()
         self.poller = setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
         self.pollNewIncidents();
     }
-
-    // This will set up any event handlers we need.
-    self.setupEventHandlers = function setupEventHandlers()
+    
+    // This will handle the event triggered from clicking one of the notification's buttons.
+    self.handlerButtonClicked = function handlerButtonClicked(notificationId, buttonIndex)
     {
-        // TODO, these need to not rely on any passed in info (self), as it will be invalid if config is reloaded.
-        // Add event handlers for button clicks to make the necessary API calls.
-        chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
+        switch (buttonIndex)
         {
-            switch (buttonIndex)
-            {
-                case 0: // Acknowledge
-                    self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/acknowledge');
-                    break;
+            case 0: // Acknowledge
+                self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/acknowledge');
+                break;
 
-                case 1: // Resolve
-                    self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/resolve');
-                    break;
-            }
-        });
-
-        // Add event handler for when a notification is clicked to load the incident in a new tab.
-        chrome.notifications.onClicked.addListener(function(notificationId)
-        {
-            window.open('https://' + self.account + '.pagerduty.com/incidents/' + notificationId);
-        });
+            case 1: // Resolve
+                self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/resolve');
+                break;
+        }
+    }
+    
+    // This will handle the event triggered when clicking on the main notification area.
+    self.handlerNotificationClicked = function handlerNotificationClicked(notificationId)
+    {
+        window.open('https://' + self.account + '.pagerduty.com/incidents/' + notificationId);
     }
 
     // This is the poller action, which will trigger an API request and then pass any incidents
@@ -145,7 +143,7 @@ function PagerDutyNotifier()
     self.pollNewIncidents = function pollNewIncidents()
     {
         // Sanity check that an account has been set.
-        if (self.account == "") { return; }
+        if (self.account == '') { return; }
 
         // We only want events triggered since we last polled.
         var since = new Date();
@@ -201,12 +199,39 @@ function PagerDutyNotifier()
     self._construct();
 }
 
-// This will reload the notifier to pick up new configuration options.
-function reload()
+// Add event handlers for button/notification clicks, and delegate to the currently active notifier object.
+chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
 {
-    _pdNotifier._destruct();
+    var bgpg = chrome.extension.getBackgroundPage();
+    bgpg.getNotifier().handlerButtonClicked(notificationId, buttonIndex);
+});
+chrome.notifications.onClicked.addListener(function(notificationId)
+{
+    var bgpg = chrome.extension.getBackgroundPage();
+    bgpg.getNotifier().handlerNotificationClicked(notificationId);
+});
+
+// If this is the first installation, show the options page so user can set up their settings.
+chrome.runtime.onInstalled.addListener(function(details)
+{
+    if (details.reason == 'install')
+    {
+        chrome.tabs.create({ 'url': 'chrome://extensions/?options=' + chrome.runtime.id });
+    }
+});
+
+// The currently active notifier object, and accessor.
+var _pdNotifier = null;
+function getNotifier() { return _pdNotifier; }
+
+// This will reload the notifier to pick up new configuration options.
+function reloadNotifier()
+{
+    if (_pdNotifier != null) { _pdNotifier._destruct(); }    
     _pdNotifier = new PagerDutyNotifier();
 }
 
-// Init
-var _pdNotifier = new PagerDutyNotifier();
+// Initialize
+reloadNotifier();
+
+

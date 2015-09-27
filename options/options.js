@@ -3,6 +3,7 @@
 // Helper functions to obfuscate the API key on the UI, and detect if it's obfuscated.
 function obfuscateAPIKey(key)
 {
+    if (key == "") { return ""; }
     return "••••••••••••••••" + key.slice(16);
 }
 function isAPIKeyObfuscated(key)
@@ -53,9 +54,8 @@ document.getElementById('save').addEventListener('click', function ()
     },
     function()
     {
-        // Tell the background process to reload itself.
-        var bgpg = chrome.extension.getBackgroundPage();
-        bgpg.reload();
+        // Tell the notifier to reload itself with the latest configuration.
+        chrome.extension.getBackgroundPage().reloadNotifier();
         
         // Let the user know things saved properly.
         getElement('saved').className = 'saved';
