@@ -15,13 +15,13 @@ function HTTP(apiKey)
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
         xhr.setRequestHeader("X-Requested-With", self.userAgent);
-        
+
         // If we have a valid API key, authenticate using that.
         if (self.apiKey != null && self.apiKey.length == 20)
         {
-            xhr.setRequestHeader("Authorization", "Token token=" + self.apiKey);      
+            xhr.setRequestHeader("Authorization", "Token token=" + self.apiKey);
         }
-        
+
         return xhr;
     }
 
@@ -73,7 +73,7 @@ function PagerDutyNotifier()
         self.loadConfiguration(function()
         {
             self.http = new HTTP(self.apiKey);
-            self.setupEventHandlers();            
+            self.setupEventHandlers();
             self.setupPoller();
         });
     }
@@ -105,6 +105,12 @@ function PagerDutyNotifier()
     {
         self.poller = setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
         self.pollNewIncidents();
+    }
+
+    // This will stop all polling.
+    self.stopPoller = function stopPoller()
+    {
+        clearInterval(self.poller);
     }
 
     // This will set up any event handlers we need.
@@ -163,7 +169,7 @@ function PagerDutyNotifier()
 
     // This will trigger the actual notification based on an incident object.
     self.triggerNotification = function triggerNotification(incident)
-    {  
+    {
         // Define the buttons to show in the notification. Will be empty if user asked to remove.
         var buttons = self.removeButtons ? [] : [
             {
@@ -175,8 +181,8 @@ function PagerDutyNotifier()
                 iconUrl: chrome.extension.getURL("img/icon-resolve.png")
             }
         ];
-        
-    
+
+
         chrome.notifications.create(incident.id,
         {
             type: "basic",
@@ -191,6 +197,13 @@ function PagerDutyNotifier()
     }
 
     self._construct();
+}
+
+// This will force a reload of the extension.
+function reloadExtension()
+{
+    _pdNotifier.stopPoller();
+    _pdNotifier = new PagerDutyNotifier();
 }
 
 var _pdNotifier = new PagerDutyNotifier();

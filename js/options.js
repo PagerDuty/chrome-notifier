@@ -53,7 +53,10 @@ document.getElementById('save').addEventListener('click', function ()
     },
     function()
     {
-        chrome.runtime.reload(); // Force a reload after config is updated so the poller restarts.
+        // Force a reload after config is updated so the poller restarts.
+        //var bgpg = chrome.runtime.getBackgroundPage();
+        //bgpg.reloadExtension();
+        chrome.runtime.reload();
     });
 });
 
