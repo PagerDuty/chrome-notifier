@@ -4,10 +4,6 @@ body {
     margin: 1em;
 }
 
-main {
-    padding: 0em 0em 0em 1em;
-}
-
 /* Typography
 ***************************************************************************************************/
 #title {
@@ -17,7 +13,11 @@ main {
 }
 
 h2 {
-    margin-top: 1.5em;
+    margin-bottom: 0.1em;
+    color: #47ba04;
+    font-weight: bold;
+    font-size: 1.6em;
+    margin-bottom: -0.2em;
 }
 
 /* Inputs
@@ -40,6 +40,7 @@ input.bad {
 
 input[type=text] {
     font-family: monospace;
+    font-size: 1.3em;
 }
 
 input[type=number] {
@@ -92,9 +93,14 @@ button:hover {
 
 /* Options
 ***************************************************************************************************/
+p {
+    line-height: 1.2em;
+}
+
 .option {
     display: block;
     margin-bottom: 1.5em;
+    margin-top: 1.5em;
 }
   
 .option label {
@@ -116,11 +122,25 @@ button:hover {
     color: #f00;
 }
 
+hr {
+    border: none;
+    height: 1px;
+    background: #47ba04;
+}
+
+.notice {
+    display: block;
+    background: #f3f3f3;
+    padding: 1em;
+    border-radius: 5px;
+    margin-bottom: 2em;
+}
+
 /* Saved Popup
 ***************************************************************************************************/
 
 #saved {
-    position: absolute;
+    position: fixed;
     top: 0.5em;
     left: 50%;
     width: 13em;
@@ -146,8 +166,6 @@ button:hover {
     margin-top: 0.5em;
 }
 
-
 #saved.saved {
     opacity: 1;
 }
-

@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function ()
         pdAPIKey: '',
         pdPollInterval: 15,
         pdIncludeLowUrgency: false,
-        pdRemoveButtons: false
+        pdRemoveButtons: false,
+        pdFilterUsers: ''
     },
     function(items)
     {
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('poll-interval').value     = items.pdPollInterval;
         getElement('low-urgency').checked     = items.pdIncludeLowUrgency;
         getElement('remove-buttons').checked  = items.pdRemoveButtons;
+        getElement('filter-users').value      = items.pdFilterUsers;
     });
 });
 
@@ -50,7 +52,8 @@ document.getElementById('save').addEventListener('click', function ()
         pdAccountSubdomain:  getElement('account-subdomain').value,
         pdPollInterval:      getElement('poll-interval').value,
         pdIncludeLowUrgency: getElement('low-urgency').checked,
-        pdRemoveButtons:     getElement('remove-buttons').checked
+        pdRemoveButtons:     getElement('remove-buttons').checked,
+        pdFilterUsers:       getElement('filter-users').value
     },
     function()
     {
@@ -103,6 +106,15 @@ function validateConfiguration()
     e = getElement('api-key');
     if (e.value !== ""
         && e.value.length != 20)
+    {
+        e.className = "bad";
+        isValid = false;
+    }
+    
+    // Filter users shouldn't have any spaces.
+    e = getElement('filter-users');
+    if (e.value !== ""
+        && e.value.indexOf(" ") > -1)
     {
         e.className = "bad";
         isValid = false;

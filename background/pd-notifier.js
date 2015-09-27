@@ -63,6 +63,7 @@ function PagerDutyNotifier()
     self.pollInterval     = 15;    // Number of seconds between checking for new notifications.
     self.includeLowUgency = false; // Whether to include low urgency incidents.
     self.removeButtons    = false; // Whether or not to unclude the action buttons.
+    self.filterUsers      = null;  // UserID's of users to only show alerts for.
     self.http             = null;  // Helper for HTTP calls.
     self.poller           = null;  // This points to the interval function so we can clear it if needed.
 
@@ -97,7 +98,8 @@ function PagerDutyNotifier()
             pdAPIKey: null,
             pdPollInterval: 15,
             pdIncludeLowUrgency: false,
-            pdRemoveButtons: false
+            pdRemoveButtons: false,
+            pdFilterUsers: null
         },
         function(items)
         {
@@ -106,6 +108,7 @@ function PagerDutyNotifier()
             self.pollInterval     = items.pdPollInterval;
             self.includeLowUgency = items.pdIncludeLowUrgency;
             self.removeButtons    = items.pdRemoveButtons;
+            self.filterUsers      = items.pdFilterUsers;
             callback(true);
         });
     }
@@ -157,6 +160,12 @@ function PagerDutyNotifier()
         // Limit to high urgency if that's all the user wants.
         if (!self.includeLowUgency) { url = url + 'urgency=high&'; }
 
+        // Add a user filter if we have one.
+        if (self.filterUsers && self.filterUsers != null && self.filterUsers != "")
+        {
+            url = url + 'assigned_to_user=' + self.filterUsers + '&';
+        }
+
         // Make the request.
         self.http.GET(url, self.parseIncidents);
     }
@@ -181,7 +190,6 @@ function PagerDutyNotifier()
                 iconUrl: chrome.extension.getURL("images/icon-resolve.png")
             }
         ];
-
 
         chrome.notifications.create(incident.id,
         {
