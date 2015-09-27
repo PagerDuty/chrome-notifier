@@ -10,4 +10,11 @@ All you need to do for it to work is to have an active session on your PagerDuty
 * Poll Interval - (Required) The number of seconds to wait between requests to the PagerDuty API to check for new incidents. Minimum is 15 seconds between polls.
 * Include Low Urgency Alerts? - If checked, then you will receive notifications for low urgency alerts.
 * Remove Ack/Resolve Buttons? - If checked, the Acknowledge/Resolve buttons are removed from the notification. You should use this if you only wish to provide a read-only API key.
+* Filter Users - (Optional) A list of comma-separated user ID's, which will only trigger notifications for incidents assigned to those users.
+
+## Contributors
+* Rich Adams (https://richadams.me)
+
+## License
+See LICENSE file.
 
