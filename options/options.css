@@ -5,7 +5,7 @@ body {
 }
 
 main {
-    padding: 0em 0em 0em 3em;
+    padding: 0em 0em 0em 1em;
 }
 
 /* Typography
@@ -94,21 +94,22 @@ button:hover {
 ***************************************************************************************************/
 .option {
     display: block;
-    margin-bottom: 0.5em;
+    margin-bottom: 1.5em;
 }
   
 .option label {
-    display: inline-block;
+    display: block;
     width: 18em;
-    text-align: right;
+    text-align: left;
     font-weight: bold;
-    padding-right: 0.5em;
+    padding-bottom: 0.5em;
 }
 
 .info {
+    display: block;
     color: #aaa;
     font-style: italic;
-    padding-left: 0.5em;
+    padding-top: 0.3em;
 }
 
 .required {
@@ -149,3 +150,4 @@ button:hover {
 #saved.saved {
     opacity: 1;
 }
+
