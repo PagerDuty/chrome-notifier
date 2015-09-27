@@ -11,7 +11,7 @@ main {
 /* Typography
 ***************************************************************************************************/
 #title {
-    background: url("../img/icon-64.png") center left no-repeat;
+    background: url("../images/icon-64.png") center left no-repeat;
     background-size: contain;
     padding-left: 1.5em;
 }
@@ -115,3 +115,37 @@ button:hover {
     color: #f00;
 }
 
+/* Saved Popup
+***************************************************************************************************/
+
+#saved {
+    position: absolute;
+    top: 0.5em;
+    left: 50%;
+    width: 13em;
+    height: 2.2em;
+    margin-left: -6em;
+    background: #47ba04;
+    border-radius: 3px;
+    font-weight: bold;
+    color: #fff;
+    font-size: 1.2em;
+    text-align: center;
+    opacity: 0;
+
+    -webkit-transition: all 0.2s ease-in-out;
+}
+
+#saved p {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    margin-top: 0.5em;
+}
+
+
+#saved.saved {
+    opacity: 1;
+}

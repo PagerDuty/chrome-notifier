@@ -53,10 +53,13 @@ document.getElementById('save').addEventListener('click', function ()
     },
     function()
     {
-        // Force a reload after config is updated so the poller restarts.
-        //var bgpg = chrome.runtime.getBackgroundPage();
-        //bgpg.reloadExtension();
-        chrome.runtime.reload();
+        // Tell the background process to reload itself.
+        var bgpg = chrome.extension.getBackgroundPage();
+        bgpg.reload();
+        
+        // Let the user know things saved properly.
+        getElement('saved').className = 'saved';
+        setTimeout(function() { getElement('saved').className = ''; }, 3000);
     });
 });
 

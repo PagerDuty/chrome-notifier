@@ -76,6 +76,13 @@ function PagerDutyNotifier()
             self.setupEventHandlers();
             self.setupPoller();
         });
+    }    
+
+    // Dtor
+    self._destruct = function _destruct()
+    {
+        clearInterval(self.poller);
+        self = null;
     }
 
     // This loads any configuration we have stored with chrome.storage
@@ -107,15 +114,10 @@ function PagerDutyNotifier()
         self.pollNewIncidents();
     }
 
-    // This will stop all polling.
-    self.stopPoller = function stopPoller()
-    {
-        clearInterval(self.poller);
-    }
-
     // This will set up any event handlers we need.
     self.setupEventHandlers = function setupEventHandlers()
     {
+        // TODO, these need to not rely on any passed in info (self), as it will be invalid if config is reloaded.
         // Add event handlers for button clicks to make the necessary API calls.
         chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
         {
@@ -174,11 +176,11 @@ function PagerDutyNotifier()
         var buttons = self.removeButtons ? [] : [
             {
                 title: "Acknowledge",
-                iconUrl: chrome.extension.getURL("img/icon-acknowledge.png")
+                iconUrl: chrome.extension.getURL("images/icon-acknowledge.png")
             },
             {
                 title: "Resolve",
-                iconUrl: chrome.extension.getURL("img/icon-resolve.png")
+                iconUrl: chrome.extension.getURL("images/icon-resolve.png")
             }
         ];
 
@@ -186,7 +188,7 @@ function PagerDutyNotifier()
         chrome.notifications.create(incident.id,
         {
             type: "basic",
-            iconUrl: chrome.extension.getURL("img/icon-256.png"),
+            iconUrl: chrome.extension.getURL("images/icon-256.png"),
             title: incident.trigger_summary_data.subject,
             message: "Service: " + incident.service.name,
             contextMessage: incident.urgency.charAt(0).toUpperCase() + incident.urgency.slice(1) + " Urgency",
@@ -199,11 +201,12 @@ function PagerDutyNotifier()
     self._construct();
 }
 
-// This will force a reload of the extension.
-function reloadExtension()
+// This will reload the notifier to pick up new configuration options.
+function reload()
 {
-    _pdNotifier.stopPoller();
+    _pdNotifier._destruct();
     _pdNotifier = new PagerDutyNotifier();
 }
 
+// Init
 var _pdNotifier = new PagerDutyNotifier();
