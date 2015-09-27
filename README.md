@@ -1,6 +1,8 @@
 # PagerDuty Chrome Notifier
 A Google Chrome extension to show PagerDuty notifications using Chrome's notification API. The notification will display some information about the alert, along with buttons to acknowledge and resolve it right from the notification!
 
+![An example of the notifications.](screenshots/example.png)
+
 All you need to do for it to work is to have an active session on your PagerDuty subdomain, or provide a PagerDuty API key for your account.
 
 ## Configuration Options
@@ -11,10 +13,3 @@ All you need to do for it to work is to have an active session on your PagerDuty
 * Include Low Urgency Alerts? - If checked, then you will receive notifications for low urgency alerts.
 * Remove Ack/Resolve Buttons? - If checked, the Acknowledge/Resolve buttons are removed from the notification. You should use this if you only wish to provide a read-only API key.
 * Filter Users - (Optional) A list of comma-separated user ID's, which will only trigger notifications for incidents assigned to those users.
-
-## Contributors
-* Rich Adams (https://richadams.me)
-
-## License
-See LICENSE file.
-
