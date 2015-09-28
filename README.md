@@ -1,7 +1,7 @@
 # PagerDuty Chrome Notifier
 A Google Chrome extension to show PagerDuty notifications using Chrome's notification API. The notification will display some information about the alert, along with buttons to acknowledge and resolve it right from the notification!
 
-![An example of the notifications.](screenshots/example.png)
+![An example of the notifications.](example.png)
 
 All you need to do for it to work is to have an active session on your PagerDuty subdomain, or provide a PagerDuty API key for your account.
 
