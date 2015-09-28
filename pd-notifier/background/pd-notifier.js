@@ -7,7 +7,7 @@ function HTTP(apiKey)
     // Members
     var self       = this;   // Self-reference
     self.apiKey    = apiKey; // API key used for requests.
-    self.userAgent = "pd-chrome-notifier-0.1"; // Will be in the X-Requested-With header of requests.
+    self.userAgent = "pd-chrome-notifier-" + chrome.app.getDetails().version; // Will be in the X-Requested-With header of requests.
 
     // Wrapper for generic XMLHttpRequest stuff
     this.prepareRequest = function prepareRequest(method, url)
@@ -76,11 +76,11 @@ function PagerDutyNotifier()
             // If no account set up (first install), then do nothing. User will need to add
             // config. Once they save, a reload will be triggered and things will kick off.
             if (self.account == null || self.account == '') { return; }
-        
+
             self.http = new HTTP(self.apiKey);
             self.setupPoller();
         });
-    }    
+    }
 
     // Dtor
     self._destruct = function _destruct()
@@ -119,7 +119,7 @@ function PagerDutyNotifier()
         self.poller = setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
         self.pollNewIncidents();
     }
-    
+
     // This will handle the event triggered from clicking one of the notification's buttons.
     self.handlerButtonClicked = function handlerButtonClicked(notificationId, buttonIndex)
     {
@@ -134,7 +134,7 @@ function PagerDutyNotifier()
                 break;
         }
     }
-    
+
     // This will handle the event triggered when clicking on the main notification area.
     self.handlerNotificationClicked = function handlerNotificationClicked(notificationId)
     {
@@ -155,7 +155,8 @@ function PagerDutyNotifier()
         // Construct the URL
         var url = 'https://' + self.account + '.pagerduty.com/api/v1/incidents?'
                 + 'status=triggered&'
-                + 'since=' + since.toISOString() + '&';
+                + 'since=' + since.toISOString() + '&'
+                + 'limit=5&'; // More than this would be silly to show notifications for.
 
         // Limit to high urgency if that's all the user wants.
         if (!self.includeLowUgency) { url = url + 'urgency=high&'; }
@@ -235,11 +236,9 @@ function getNotifier() { return _pdNotifier; }
 // This will reload the notifier to pick up new configuration options.
 function reloadNotifier()
 {
-    if (_pdNotifier != null) { _pdNotifier._destruct(); }    
+    if (_pdNotifier != null) { _pdNotifier._destruct(); }
     _pdNotifier = new PagerDutyNotifier();
 }
 
 // Initialize
 reloadNotifier();
-
-
