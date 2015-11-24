@@ -27,20 +27,22 @@
 
         <hr/>
         <h2>Notification Settings</h2>
-        <p>Some additional settings regarding the notifications you will receive.</p>
-        <div class="option">
-            <label>Include low urgency incidents?</label>
-            <input id="low-urgency" type="checkbox" />
-        </div>
-        <div class="option">
-            <label>Remove Ack/Resolve buttons?</label>
-            <input id="remove-buttons" type="checkbox" />
-            <span class="info">If you only want to use a read-only API key, then you can select this option to remove the action buttons.</span>
-        </div>        
+        <p>Some additional settings to customize your notifications.</p>
+
         <div class="option">
             <label>Filter Users</label>
             <input id="filter-users" type="text" size="20" />
             <span class="info">Only show notifications for incidents currently assigned to these user(s). Should be one or more user IDs (comma separated, no spaces). </span>
+        </div>
+
+        <div class="option checkbox">
+            <label>Include low urgency incidents?</label>
+            <input id="low-urgency" type="checkbox" />
+        </div>
+        <div class="option checkbox">
+            <label>Remove Ack/Resolve buttons?</label>
+            <input id="remove-buttons" type="checkbox" />
+            <span class="info">If you only want to use a read-only API key, then you can select this option to remove the action buttons.</span>
         </div>
 
         <button id="save">Save</button>

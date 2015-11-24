@@ -102,7 +102,7 @@ p {
     margin-bottom: 1.5em;
     margin-top: 1.5em;
 }
-  
+
 .option label {
     display: block;
     width: 18em;
@@ -134,6 +134,19 @@ hr {
     padding: 1em;
     border-radius: 5px;
     margin-bottom: 2em;
+}
+
+.option.checkbox input {
+    margin-top: -0.5em;
+}
+
+.option.checkbox label {
+    padding-left: 1.8em;
+    margin-bottom: -1.5em;
+}
+
+.option.checkbox {
+    margin-top: -0.8em;
 }
 
 /* Saved Popup
