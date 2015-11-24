@@ -16,6 +16,7 @@
         "notifications",
         "background",
         "storage",
+        "alarms",
         "https://*.pagerduty.com/api/v1/*"
     ],
     "options_ui": {

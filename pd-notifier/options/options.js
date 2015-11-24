@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function ()
         // Defaults
         pdAccountSubdomain: '',
         pdAPIKey: '',
-        pdPollInterval: 15,
         pdIncludeLowUrgency: false,
         pdRemoveButtons: false,
         pdFilterUsers: ''
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function ()
         // Update the page elements appropriately.
         getElement('account-subdomain').value = items.pdAccountSubdomain;
         getElement('api-key').value           = obfuscateAPIKey(items.pdAPIKey);
-        getElement('poll-interval').value     = items.pdPollInterval;
         getElement('low-urgency').checked     = items.pdIncludeLowUrgency;
         getElement('remove-buttons').checked  = items.pdRemoveButtons;
         getElement('filter-users').value      = items.pdFilterUsers;
@@ -50,7 +48,6 @@ document.getElementById('save').addEventListener('click', function ()
     chrome.storage.sync.set(
     {
         pdAccountSubdomain:  getElement('account-subdomain').value,
-        pdPollInterval:      getElement('poll-interval').value,
         pdIncludeLowUrgency: getElement('low-urgency').checked,
         pdRemoveButtons:     getElement('remove-buttons').checked,
         pdFilterUsers:       getElement('filter-users').value
@@ -59,7 +56,7 @@ document.getElementById('save').addEventListener('click', function ()
     {
         // Tell the notifier to reload itself with the latest configuration.
         chrome.extension.getBackgroundPage().reloadNotifier();
-        
+
         // Let the user know things saved properly.
         getElement('saved').className = 'saved';
         setTimeout(function() { getElement('saved').className = ''; }, 3000);
@@ -92,16 +89,7 @@ function validateConfiguration()
         e.className = "bad";
         isValid = false;
     }
-    
-    // Poll interval is required, should be integer, and must be no less than 15.
-    e = getElement('poll-interval');
-    if (!isInteger(e.value)
-        || e.value < 15)
-    {
-        e.className = "bad";
-        isValid = false;
-    }
-    
+
     // API Key should be exactly 20 chars long.
     e = getElement('api-key');
     if (e.value !== ""
@@ -110,7 +98,7 @@ function validateConfiguration()
         e.className = "bad";
         isValid = false;
     }
-    
+
     // Filter users shouldn't have any spaces.
     e = getElement('filter-users');
     if (e.value !== ""
@@ -119,6 +107,6 @@ function validateConfiguration()
         e.className = "bad";
         isValid = false;
     }
-    
+
     return isValid;
 }

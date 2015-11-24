@@ -20,19 +20,14 @@
             <input id="api-key" type="text" size="20" />
             <span class="info">Optionally provide an API key for your account. (20 characters).</span>
         </div>
-        
+
         <div class="notice">
         If you don't provide an API key, you will only receive notifications when your website session is active. If you provide a read-only API key, you will get notifications, but you will be unable to acknowledge or resolve them from the notification.
         </div>
 
         <hr/>
         <h2>Notification Settings</h2>
-        <p>Define how often you want to check for new incidents, and additional settings regarding the notifications you will receive.</p>
-        <div class="option">
-            <label>Poll Interval (seconds) <span class="required">*</span></label>
-            <input id="poll-interval" type="number" min="15" step="5" />
-        <span class="info">Minimum of 15 seconds.</span>
-        </div>
+        <p>Some additional settings regarding the notifications you will receive.</p>
         <div class="option">
             <label>Include low urgency incidents?</label>
             <input id="low-urgency" type="checkbox" />
@@ -50,7 +45,7 @@
 
         <button id="save">Save</button>
     </main>
-    
+
     <section id="saved">
         <p>&#x2713; Changes saved!</p>
     </section>

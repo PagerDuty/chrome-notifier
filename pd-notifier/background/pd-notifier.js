@@ -54,6 +54,7 @@ function HTTP(apiKey)
     }
 }
 
+// Will poll continually at the pollInterval until it's destroyed (_destruct() is called).
 function PagerDutyNotifier()
 {
     // Members
@@ -96,7 +97,6 @@ function PagerDutyNotifier()
         {
             pdAccountSubdomain: '',
             pdAPIKey: null,
-            pdPollInterval: 15,
             pdIncludeLowUrgency: false,
             pdRemoveButtons: false,
             pdFilterUsers: null
@@ -105,7 +105,6 @@ function PagerDutyNotifier()
         {
             self.account          = items.pdAccountSubdomain;
             self.apiKey           = items.pdAPIKey;
-            self.pollInterval     = items.pdPollInterval;
             self.includeLowUgency = items.pdIncludeLowUrgency;
             self.removeButtons    = items.pdRemoveButtons;
             self.filterUsers      = items.pdFilterUsers;
@@ -233,12 +232,18 @@ chrome.runtime.onInstalled.addListener(function(details)
 var _pdNotifier = null;
 function getNotifier() { return _pdNotifier; }
 
-// This will reload the notifier to pick up new configuration options.
+// This will reload/trigger the the notifier (and pick up any new configuration options).
 function reloadNotifier()
 {
     if (_pdNotifier != null) { _pdNotifier._destruct(); }
     _pdNotifier = new PagerDutyNotifier();
 }
 
-// Initialize
+// Listen for Chrome Alarms and retrigger the notifier when one is caught.
+chrome.alarms.onAlarm.addListener(function(alarm) { reloadNotifier(); });
+
+// Sets up a Chrome Alarm to retrigger the notifier every so often, to make sure it's always running.
+chrome.alarms.create("pagerduty-notifier", { periodInMinutes: 1 });
+
+// Initial run, as alarm won't trigger immediately.
 reloadNotifier();
