@@ -191,11 +191,15 @@ function PagerDutyNotifier()
             }
         ];
 
+        // Sometimes there isn't a subject, use description instead in that case.
+        title = incident.trigger_summary_data.subject;
+        if (!title) { title = incident.trigger_summary_data.description; }
+
         chrome.notifications.create(incident.id,
         {
             type: "basic",
             iconUrl: chrome.extension.getURL("images/icon-256.png"),
-            title: incident.trigger_summary_data.subject,
+            title: title,
             message: "Service: " + incident.service.name,
             contextMessage: incident.urgency.charAt(0).toUpperCase() + incident.urgency.slice(1) + " Urgency",
             priority: 2,
