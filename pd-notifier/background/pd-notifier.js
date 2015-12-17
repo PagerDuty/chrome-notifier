@@ -216,11 +216,13 @@ chrome.notifications.onButtonClicked.addListener(function(notificationId, button
 {
     var bgpg = chrome.extension.getBackgroundPage();
     bgpg.getNotifier().handlerButtonClicked(notificationId, buttonIndex);
+    chrome.notifications.clear(notificationId);
 });
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
     var bgpg = chrome.extension.getBackgroundPage();
     bgpg.getNotifier().handlerNotificationClicked(notificationId);
+    chrome.notifications.clear(notificationId);
 });
 
 // If this is the first installation, show the options page so user can set up their settings.
