@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function ()
         pdAPIKey: '',
         pdIncludeLowUrgency: false,
         pdRemoveButtons: false,
+        pdFilterServices: '',
         pdFilterUsers: ''
     },
     function(items)
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('api-key').value           = obfuscateAPIKey(items.pdAPIKey);
         getElement('low-urgency').checked     = items.pdIncludeLowUrgency;
         getElement('remove-buttons').checked  = items.pdRemoveButtons;
+        getElement('filter-services').value   = items.pdFilterServices;
         getElement('filter-users').value      = items.pdFilterUsers;
     });
 });
@@ -50,6 +52,7 @@ document.getElementById('save').addEventListener('click', function ()
         pdAccountSubdomain:  getElement('account-subdomain').value,
         pdIncludeLowUrgency: getElement('low-urgency').checked,
         pdRemoveButtons:     getElement('remove-buttons').checked,
+        pdFilterServices:    getElement('filter-services').value,
         pdFilterUsers:       getElement('filter-users').value
     },
     function()
@@ -99,8 +102,20 @@ function validateConfiguration()
         isValid = false;
     }
 
+    // Filter services shouldn't have any spaces
+    e = getElement('filter-services');
+    e.value = e.value.replace(/\s+/g, '');
+    if (e.value !== ""
+        && e.value.indexOf(" ") > -1)
+    {
+        e.className = "bad";
+        isValid = false;
+    }
+
+
     // Filter users shouldn't have any spaces.
     e = getElement('filter-users');
+    e.value = e.value.replace(/\s+/g, '');
     if (e.value !== ""
         && e.value.indexOf(" ") > -1)
     {
