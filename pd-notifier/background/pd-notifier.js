@@ -64,6 +64,7 @@ function PagerDutyNotifier()
     self.pollInterval     = 15;    // Number of seconds between checking for new notifications.
     self.includeLowUgency = false; // Whether to include low urgency incidents.
     self.removeButtons    = false; // Whether or not to unclude the action buttons.
+    self.filterServices   = null;  // ServiceID's of services to only show alerts for. 
     self.filterUsers      = null;  // UserID's of users to only show alerts for.
     self.http             = null;  // Helper for HTTP calls.
     self.poller           = null;  // This points to the interval function so we can clear it if needed.
@@ -99,6 +100,7 @@ function PagerDutyNotifier()
             pdAPIKey: null,
             pdIncludeLowUrgency: false,
             pdRemoveButtons: false,
+            pdFilterServices: null,
             pdFilterUsers: null
         },
         function(items)
@@ -107,6 +109,7 @@ function PagerDutyNotifier()
             self.apiKey           = items.pdAPIKey;
             self.includeLowUgency = items.pdIncludeLowUrgency;
             self.removeButtons    = items.pdRemoveButtons;
+            self.filterServices   = items.pdFilterServices;
             self.filterUsers      = items.pdFilterUsers;
             callback(true);
         });
@@ -160,6 +163,12 @@ function PagerDutyNotifier()
         // Limit to high urgency if that's all the user wants.
         if (!self.includeLowUgency) { url = url + 'urgency=high&'; }
 
+        // Add a service filter if we have one.
+        if (self.filterServices && self.filterServices != null && self.filterServices != "")
+        {
+            url = url + 'service=' + self.filterServices + '&';
+        }   
+             
         // Add a user filter if we have one.
         if (self.filterUsers && self.filterUsers != null && self.filterUsers != "")
         {
