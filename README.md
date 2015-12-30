@@ -19,6 +19,7 @@ If you decide to use an API key instead, you can use either a read-only key, or 
 * **Include Low Urgency Alerts?** - If checked, then you will receive notifications for low urgency alerts.
 * **Remove Ack/Resolve Buttons?** - If checked, the Acknowledge/Resolve buttons are removed from the notification. You should use this if you only wish to provide a read-only API key.
 * **Filter Users** - (Optional) A list of comma-separated user ID's, which will only trigger notifications for incidents assigned to those users.
+* **Filter Services** - (Optional) A list of comma-separated service ID's, which will only trigger notifications for incidents that are part of those services.
 
 ## License
 [Apache 2](http://www.apache.org/licenses/LICENSE-2.0) (See LICENSE file)
