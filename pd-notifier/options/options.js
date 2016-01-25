@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function ()
         pdIncludeLowUrgency: false,
         pdRemoveButtons: false,
         pdOpenOnAck: false,
+        pdNotifSound: false,
         pdFilterServices: '',
         pdFilterUsers: ''
     },
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('low-urgency').checked     = items.pdIncludeLowUrgency;
         getElement('remove-buttons').checked  = items.pdRemoveButtons;
         getElement('open-on-ack').checked     = items.pdOpenOnAck;
+        getElement('notif-sound').checked     = items.pdNotifSound;
         getElement('filter-services').value   = items.pdFilterServices;
         getElement('filter-users').value      = items.pdFilterUsers;
     });
@@ -55,6 +57,7 @@ document.getElementById('save').addEventListener('click', function ()
         pdIncludeLowUrgency: getElement('low-urgency').checked,
         pdRemoveButtons:     getElement('remove-buttons').checked,
         pdOpenOnAck:         getElement('open-on-ack').checked,
+        pdNotifSound:        getElement('notif-sound').checked,
         pdFilterServices:    getElement('filter-services').value,
         pdFilterUsers:       getElement('filter-users').value
     },

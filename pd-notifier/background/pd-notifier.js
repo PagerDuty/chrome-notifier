@@ -65,6 +65,7 @@ function PagerDutyNotifier()
     self.includeLowUgency = false; // Whether to include low urgency incidents.
     self.removeButtons    = false; // Whether or not to unclude the action buttons.
     self.openOnAck        = false; // Whether to open the incident in a new tab when ack-ing.
+    self.pdNotifSound     = false; // Whether to play a notification sound.
     self.filterServices   = null;  // ServiceID's of services to only show alerts for. 
     self.filterUsers      = null;  // UserID's of users to only show alerts for.
     self.http             = null;  // Helper for HTTP calls.
@@ -102,6 +103,7 @@ function PagerDutyNotifier()
             pdIncludeLowUrgency: false,
             pdRemoveButtons: false,
             pdOpenOnAck: false,
+            pdNotifSound: false,
             pdFilterServices: null,
             pdFilterUsers: null
         },
@@ -112,6 +114,7 @@ function PagerDutyNotifier()
             self.includeLowUgency = items.pdIncludeLowUrgency;
             self.removeButtons    = items.pdRemoveButtons;
             self.openOnAck        = items.pdOpenOnAck;
+            self.notifSound       = items.pdNotifSound;
             self.filterServices   = items.pdFilterServices;
             self.filterUsers      = items.pdFilterUsers;
             callback(true);
@@ -219,6 +222,13 @@ function PagerDutyNotifier()
             isClickable: true,
             buttons: buttons
         });
+
+        // Trigger notification sound if user wants it.
+        if (self.notifSound)
+        {
+            var notifSound = new Audio("audio/notification.mp3");
+            notifSound.play();
+        }
     }
 
     self._construct();
