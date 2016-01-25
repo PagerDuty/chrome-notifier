@@ -11,8 +11,7 @@
         <p>Basic notifier setup, all of the options relating to your account.</p>
         <div class="option">
         <label>Account Subdomain <span class="required">*</span></label>
-            <input id="account-subdomain" type="text" size="20" />
-            <span class="info">If your account is at https://example.pagerduty.com, use "example".</span>
+            https://<input id="account-subdomain" type="text" size="20" />.pagerduty.com
         </div>
 
         <div class="option">
@@ -26,8 +25,8 @@
         </div>
 
         <hr/>
-        <h2>Notification Settings</h2>
-        <p>Some additional settings to customize your notifications.</p>
+        <h2>Notification Filters</h2>
+        <p>For if you only want to get notifications for certain users or services.</p>
 
         <div class="option">
             <label>Filter Users</label>
@@ -40,6 +39,10 @@
             <input id="filter-services" type="text" size="20" />
             <span class="info">Only show notifications for incidents from these services. Should be one or more service IDs (comma sepaarated, no spaces). </span>
         </div>
+
+        <hr/>
+        <h2>Additional Settings</h2>
+        <p>Some additional settings to customize your notifications.</p>
 
         <div class="option checkbox">
             <label>Include low urgency incidents?</label>
