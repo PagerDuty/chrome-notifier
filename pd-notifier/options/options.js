@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function ()
         pdAPIKey: '',
         pdIncludeLowUrgency: false,
         pdRemoveButtons: false,
+        pdOpenOnAck: false,
         pdFilterServices: '',
         pdFilterUsers: ''
     },
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('api-key').value           = obfuscateAPIKey(items.pdAPIKey);
         getElement('low-urgency').checked     = items.pdIncludeLowUrgency;
         getElement('remove-buttons').checked  = items.pdRemoveButtons;
+        getElement('open-on-ack').checked     = items.pdOpenOnAck;
         getElement('filter-services').value   = items.pdFilterServices;
         getElement('filter-users').value      = items.pdFilterUsers;
     });
@@ -52,6 +54,7 @@ document.getElementById('save').addEventListener('click', function ()
         pdAccountSubdomain:  getElement('account-subdomain').value,
         pdIncludeLowUrgency: getElement('low-urgency').checked,
         pdRemoveButtons:     getElement('remove-buttons').checked,
+        pdOpenOnAck:         getElement('open-on-ack').checked,
         pdFilterServices:    getElement('filter-services').value,
         pdFilterUsers:       getElement('filter-users').value
     },

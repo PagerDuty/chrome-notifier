@@ -64,6 +64,7 @@ function PagerDutyNotifier()
     self.pollInterval     = 15;    // Number of seconds between checking for new notifications.
     self.includeLowUgency = false; // Whether to include low urgency incidents.
     self.removeButtons    = false; // Whether or not to unclude the action buttons.
+    self.openOnAck        = false; // Whether to open the incident in a new tab when ack-ing.
     self.filterServices   = null;  // ServiceID's of services to only show alerts for. 
     self.filterUsers      = null;  // UserID's of users to only show alerts for.
     self.http             = null;  // Helper for HTTP calls.
@@ -100,6 +101,7 @@ function PagerDutyNotifier()
             pdAPIKey: null,
             pdIncludeLowUrgency: false,
             pdRemoveButtons: false,
+            pdOpenOnAck: false,
             pdFilterServices: null,
             pdFilterUsers: null
         },
@@ -109,6 +111,7 @@ function PagerDutyNotifier()
             self.apiKey           = items.pdAPIKey;
             self.includeLowUgency = items.pdIncludeLowUrgency;
             self.removeButtons    = items.pdRemoveButtons;
+            self.openOnAck        = items.pdOpenOnAck;
             self.filterServices   = items.pdFilterServices;
             self.filterUsers      = items.pdFilterUsers;
             callback(true);
@@ -129,6 +132,7 @@ function PagerDutyNotifier()
         {
             case 0: // Acknowledge
                 self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/acknowledge');
+                if (self.openOnAck) { self.handlerNotificationClicked(notificationId); }
                 break;
 
             case 1: // Resolve
