@@ -16,10 +16,13 @@ If you decide to use an API key instead, you can use either a read-only key, or 
 
 * **Account Subdomain** - (Required) The subdomain for your PagerDuty account. If your account is https://example.pagerduty.com, you would use "example".
 * **PagerDuty API Key** - (Optional) An API key for your PagerDuty account. If not provided, an active session on your subdomain is needed. If a read-only key is provided, then the Acknowledge/Resolve buttons will be non-functional.
-* **Include Low Urgency Alerts?** - If checked, then you will receive notifications for low urgency alerts.
-* **Remove Ack/Resolve Buttons?** - If checked, the Acknowledge/Resolve buttons are removed from the notification. You should use this if you only wish to provide a read-only API key.
 * **Filter Users** - (Optional) A list of comma-separated user ID's, which will only trigger notifications for incidents assigned to those users.
 * **Filter Services** - (Optional) A list of comma-separated service ID's, which will only trigger notifications for incidents that are part of those services.
+* **Include Low Urgency Alerts?** - If checked, then you will receive notifications for low urgency alerts.
+* **Remove Ack/Resolve Buttons?** - If checked, the Acknowledge/Resolve buttons are removed from the notification. You should use this if you only wish to provide a read-only API key.
+* **Open incident in new tab on acknowledge?** - If checked, whenever you click the "Acknowledge" button, the incident page will be opened in a new tab.
+* **Play a notification sound?** - If checked, a short sound will play whenever a new notification is triggered.
+
 
 ## License
 [Apache 2](http://www.apache.org/licenses/LICENSE-2.0) (See LICENSE file)
