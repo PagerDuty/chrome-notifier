@@ -15,6 +15,7 @@ function HTTP(apiKey)
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
         xhr.setRequestHeader("X-Requested-With", self.userAgent);
+        xhr.setRequestHeader("X-PagerDuty-Api-Local", 1);
 
         // If we have a valid API key, authenticate using that.
         if (self.apiKey != null && self.apiKey.length == 20)
@@ -66,7 +67,7 @@ function PagerDutyNotifier()
     self.removeButtons    = false; // Whether or not to unclude the action buttons.
     self.openOnAck        = false; // Whether to open the incident in a new tab when ack-ing.
     self.pdNotifSound     = false; // Whether to play a notification sound.
-    self.filterServices   = null;  // ServiceID's of services to only show alerts for. 
+    self.filterServices   = null;  // ServiceID's of services to only show alerts for.
     self.filterUsers      = null;  // UserID's of users to only show alerts for.
     self.http             = null;  // Helper for HTTP calls.
     self.poller           = null;  // This points to the interval function so we can clear it if needed.
@@ -174,8 +175,8 @@ function PagerDutyNotifier()
         if (self.filterServices && self.filterServices != null && self.filterServices != "")
         {
             url = url + 'service=' + self.filterServices + '&';
-        }   
-             
+        }
+
         // Add a user filter if we have one.
         if (self.filterUsers && self.filterUsers != null && self.filterUsers != "")
         {
