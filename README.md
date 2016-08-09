@@ -21,6 +21,7 @@ If you decide to use an API key instead, you can use either a read-only key, or 
 * **Include Low Urgency Alerts?** - If checked, then you will receive notifications for low urgency alerts.
 * **Remove Ack/Resolve Buttons?** - If checked, the Acknowledge/Resolve buttons are removed from the notification. You should use this if you only wish to provide a read-only API key.
 * **Open incident in new tab on acknowledge?** - If checked, whenever you click the "Acknowledge" button, the incident page will be opened in a new tab.
+* **Require interaction to dismiss notification?** - If checked, the notification will remain on your desktop until you interact with it by clicking on an option.
 * **Play a notification sound?** - If checked, a short sound will play whenever a new notification is triggered.
 
 

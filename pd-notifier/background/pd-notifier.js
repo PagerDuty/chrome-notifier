@@ -59,18 +59,19 @@ function HTTP(apiKey)
 function PagerDutyNotifier()
 {
     // Members
-    var self              = this;  // Self-reference
-    self.account          = null;  // The PagerDuty account subdomain to check.
-    self.apiKey           = null;  // Optional API key to not require active session.
-    self.pollInterval     = 15;    // Number of seconds between checking for new notifications.
-    self.includeLowUgency = false; // Whether to include low urgency incidents.
-    self.removeButtons    = false; // Whether or not to unclude the action buttons.
-    self.openOnAck        = false; // Whether to open the incident in a new tab when ack-ing.
-    self.pdNotifSound     = false; // Whether to play a notification sound.
-    self.filterServices   = null;  // ServiceID's of services to only show alerts for.
-    self.filterUsers      = null;  // UserID's of users to only show alerts for.
-    self.http             = null;  // Helper for HTTP calls.
-    self.poller           = null;  // This points to the interval function so we can clear it if needed.
+    var self                = this;  // Self-reference
+    self.account            = null;  // The PagerDuty account subdomain to check.
+    self.apiKey             = null;  // Optional API key to not require active session.
+    self.pollInterval       = 15;    // Number of seconds between checking for new notifications.
+    self.includeLowUgency   = false; // Whether to include low urgency incidents.
+    self.removeButtons      = false; // Whether or not to unclude the action buttons.
+    self.openOnAck          = false; // Whether to open the incident in a new tab when ack-ing.
+    self.notifSound         = false; // Whether to play a notification sound.
+    self.requireInteraction = false; // Whether the notification will require user interaction to dismiss.
+    self.filterServices     = null;  // ServiceID's of services to only show alerts for.
+    self.filterUsers        = null;  // UserID's of users to only show alerts for.
+    self.http               = null;  // Helper for HTTP calls.
+    self.poller             = null;  // This points to the interval function so we can clear it if needed.
 
     // Ctor
     self._construct = function _construct()
@@ -105,19 +106,21 @@ function PagerDutyNotifier()
             pdRemoveButtons: false,
             pdOpenOnAck: false,
             pdNotifSound: false,
+            pdRequireInteraction: false,
             pdFilterServices: null,
             pdFilterUsers: null
         },
         function(items)
         {
-            self.account          = items.pdAccountSubdomain;
-            self.apiKey           = items.pdAPIKey;
-            self.includeLowUgency = items.pdIncludeLowUrgency;
-            self.removeButtons    = items.pdRemoveButtons;
-            self.openOnAck        = items.pdOpenOnAck;
-            self.notifSound       = items.pdNotifSound;
-            self.filterServices   = items.pdFilterServices;
-            self.filterUsers      = items.pdFilterUsers;
+            self.account            = items.pdAccountSubdomain;
+            self.apiKey             = items.pdAPIKey;
+            self.includeLowUgency   = items.pdIncludeLowUrgency;
+            self.removeButtons      = items.pdRemoveButtons;
+            self.openOnAck          = items.pdOpenOnAck;
+            self.notifSound         = items.pdNotifSound;
+            self.requireInteraction = items.pdRequireInteraction;
+            self.filterServices     = items.pdFilterServices;
+            self.filterUsers        = items.pdFilterUsers;
             callback(true);
         });
     }
@@ -221,7 +224,8 @@ function PagerDutyNotifier()
             contextMessage: incident.urgency.charAt(0).toUpperCase() + incident.urgency.slice(1) + " Urgency",
             priority: 2,
             isClickable: true,
-            buttons: buttons
+            buttons: buttons,
+            requireInteraction: self.requireInteraction
         });
 
         // Trigger notification sound if user wants it.

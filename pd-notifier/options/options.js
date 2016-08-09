@@ -23,20 +23,22 @@ document.addEventListener('DOMContentLoaded', function ()
         pdRemoveButtons: false,
         pdOpenOnAck: false,
         pdNotifSound: false,
+        pdRequireInteraction: false,
         pdFilterServices: '',
         pdFilterUsers: ''
     },
     function(items)
     {
         // Update the page elements appropriately.
-        getElement('account-subdomain').value = items.pdAccountSubdomain;
-        getElement('api-key').value           = obfuscateAPIKey(items.pdAPIKey);
-        getElement('low-urgency').checked     = items.pdIncludeLowUrgency;
-        getElement('remove-buttons').checked  = items.pdRemoveButtons;
-        getElement('open-on-ack').checked     = items.pdOpenOnAck;
-        getElement('notif-sound').checked     = items.pdNotifSound;
-        getElement('filter-services').value   = items.pdFilterServices;
-        getElement('filter-users').value      = items.pdFilterUsers;
+        getElement('account-subdomain').value     = items.pdAccountSubdomain;
+        getElement('api-key').value               = obfuscateAPIKey(items.pdAPIKey);
+        getElement('low-urgency').checked         = items.pdIncludeLowUrgency;
+        getElement('remove-buttons').checked      = items.pdRemoveButtons;
+        getElement('open-on-ack').checked         = items.pdOpenOnAck;
+        getElement('notif-sound').checked         = items.pdNotifSound;
+        getElement('require-interaction').checked = items.pdRequireInteraction;
+        getElement('filter-services').value       = items.pdFilterServices;
+        getElement('filter-users').value          = items.pdFilterUsers;
     });
 });
 
@@ -53,13 +55,14 @@ document.getElementById('save').addEventListener('click', function ()
 
     chrome.storage.sync.set(
     {
-        pdAccountSubdomain:  getElement('account-subdomain').value,
-        pdIncludeLowUrgency: getElement('low-urgency').checked,
-        pdRemoveButtons:     getElement('remove-buttons').checked,
-        pdOpenOnAck:         getElement('open-on-ack').checked,
-        pdNotifSound:        getElement('notif-sound').checked,
-        pdFilterServices:    getElement('filter-services').value,
-        pdFilterUsers:       getElement('filter-users').value
+        pdAccountSubdomain:   getElement('account-subdomain').value,
+        pdIncludeLowUrgency:  getElement('low-urgency').checked,
+        pdRemoveButtons:      getElement('remove-buttons').checked,
+        pdOpenOnAck:          getElement('open-on-ack').checked,
+        pdNotifSound:         getElement('notif-sound').checked,
+        pdRequireInteraction: getElement('require-interaction').checked,
+        pdFilterServices:     getElement('filter-services').value,
+        pdFilterUsers:        getElement('filter-users').value
     },
     function()
     {
