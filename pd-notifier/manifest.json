@@ -28,5 +28,8 @@
             "background/pd-notifier.js"
         ],
         "persistent": true
+    },
+    "browser_action": {
+      "default_icon": "images/icon-32.png"
     }
 }
