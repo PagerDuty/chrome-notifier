@@ -1,5 +1,4 @@
 # PagerDuty Chrome Notifier
-:exclamation: **_Built for PagerDuty Hack Day and not extensively tested, use at own risk._**
 
 A Google Chrome extension to show PagerDuty notifications using Chrome's notification API. The notification will display some information about the alert, along with buttons to acknowledge and resolve it right from the notification!
 
