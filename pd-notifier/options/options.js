@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function ()
         pdNotifSound: false,
         pdRequireInteraction: false,
         pdFilterServices: '',
-        pdFilterUsers: ''
+        pdFilterUsers: '',
+        pdShowBadgeUpdates: false
     },
     function(items)
     {
@@ -39,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('require-interaction').checked = items.pdRequireInteraction;
         getElement('filter-services').value       = items.pdFilterServices;
         getElement('filter-users').value          = items.pdFilterUsers;
+        getElement('show-badge').checked          = items.pdShowBadgeUpdates;
     });
 });
 
@@ -62,7 +64,8 @@ document.getElementById('save').addEventListener('click', function ()
         pdNotifSound:         getElement('notif-sound').checked,
         pdRequireInteraction: getElement('require-interaction').checked,
         pdFilterServices:     getElement('filter-services').value,
-        pdFilterUsers:        getElement('filter-users').value
+        pdFilterUsers:        getElement('filter-users').value,
+        pdShowBadgeUpdates:   getElement('show-badge').checked
     },
     function()
     {
@@ -72,6 +75,9 @@ document.getElementById('save').addEventListener('click', function ()
         // Let the user know things saved properly.
         getElement('saved').className = 'saved';
         setTimeout(function() { getElement('saved').className = ''; }, 3000);
+
+        // Remove badge icon if it was previously set.
+        if (!getElement('show-badge').checked) { chrome.browserAction.setBadgeText({ text: '' }); }
     });
 });
 

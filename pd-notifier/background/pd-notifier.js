@@ -72,6 +72,7 @@ function PagerDutyNotifier()
     self.filterUsers        = null;  // UserID's of users to only show alerts for.
     self.http               = null;  // Helper for HTTP calls.
     self.poller             = null;  // This points to the interval function so we can clear it if needed.
+    self.showBadgeUpdates   = false; // Whether we show updates on the toolbar badge.
 
     // Ctor
     self._construct = function _construct()
@@ -108,7 +109,8 @@ function PagerDutyNotifier()
             pdNotifSound: false,
             pdRequireInteraction: false,
             pdFilterServices: null,
-            pdFilterUsers: null
+            pdFilterUsers: null,
+            pdShowBadgeUpdates: false
         },
         function(items)
         {
@@ -121,6 +123,7 @@ function PagerDutyNotifier()
             self.requireInteraction = items.pdRequireInteraction;
             self.filterServices     = items.pdFilterServices;
             self.filterUsers        = items.pdFilterUsers;
+            self.showBadgeUpdates   = items.pdShowBadgeUpdates;
             callback(true);
         });
     }
@@ -128,8 +131,15 @@ function PagerDutyNotifier()
     // This will set up the poller process.
     self.setupPoller = function setupPoller()
     {
-        self.poller = setInterval(function() { self.pollNewIncidents(); }, self.pollInterval * 1000);
-        self.pollNewIncidents();
+        self.poller = setInterval(function() { self.polled(); }, self.pollInterval * 1000);
+        self.polled();
+    }
+
+    // This is the method that's executed on each poll.
+    self.polled = function polled()
+    {
+      self.pollNewIncidents();
+      if (self.showBadgeUpdates) { self.updateToolbarBadge(); }
     }
 
     // This will handle the event triggered from clicking one of the notification's buttons.
@@ -146,6 +156,7 @@ function PagerDutyNotifier()
                 self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/resolve');
                 break;
         }
+        setTimeout(function() { self.updateToolbarBadge(); }, 200); // Force a badge update, so it changes quickly.
     }
 
     // This will handle the event triggered when clicking on the main notification area.
@@ -170,7 +181,15 @@ function PagerDutyNotifier()
                 + 'status=triggered&'
                 + 'since=' + since.toISOString() + '&'
                 + 'limit=5&'; // More than this would be silly to show notifications for.
+        url = self.includeFilters(url);
 
+        // Make the request.
+        self.http.GET(url, self.parseIncidents);
+    }
+
+    // Adds filters to a URL we'll be using in a request
+    self.includeFilters = function includeFilters(url)
+    {
         // Limit to high urgency if that's all the user wants.
         if (!self.includeLowUgency) { url = url + 'urgency=high&'; }
 
@@ -186,14 +205,31 @@ function PagerDutyNotifier()
             url = url + 'assigned_to_user=' + self.filterUsers + '&';
         }
 
-        // Make the request.
-        self.http.GET(url, self.parseIncidents);
+        return url;
     }
 
     // This will parse the AJAX response and trigger notifications for each incident.
     self.parseIncidents = function parseIncidents(data)
     {
         for (var i in data.incidents) { self.triggerNotification(data.incidents[i]); }
+    }
+
+    // This will update the icon badge in the toolbar.
+    self.updateToolbarBadge = function updateToolbarBadge()
+    {
+        // Check for any triggered incidents at all that follow our filters.
+        var url = self.includeFilters('https://' + self.account + '.pagerduty.com/api/v1/incidents?status=triggered&')
+        self.http.GET(url, function(data)
+        {
+          if (data.total == 0)
+          {
+              chrome.browserAction.setBadgeText({ text: '' });
+              return;
+          }
+
+          chrome.browserAction.setBadgeText({ text: '' + data.total });
+          chrome.browserAction.setBadgeBackgroundColor({ color: [166, 0, 0, 255] });
+        });
     }
 
     // This will trigger the actual notification based on an incident object.
@@ -251,6 +287,12 @@ chrome.notifications.onClicked.addListener(function(notificationId)
     var bgpg = chrome.extension.getBackgroundPage();
     bgpg.getNotifier().handlerNotificationClicked(notificationId);
     chrome.notifications.clear(notificationId);
+});
+
+// Add event handler for the toolbar icon click.
+chrome.browserAction.onClicked.addListener(function(tab)
+{
+    chrome.tabs.create({ 'url': 'https://' + chrome.extension.getBackgroundPage().getNotifier().account + '.pagerduty.com/incidents?status=triggered' })
 });
 
 // If this is the first installation, show the options page so user can set up their settings.
