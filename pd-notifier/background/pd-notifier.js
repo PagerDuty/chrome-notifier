@@ -16,6 +16,7 @@ function HTTP(apiKey)
         xhr.open(method, url, true);
         xhr.setRequestHeader("X-Requested-With", self.userAgent);
         xhr.setRequestHeader("X-PagerDuty-Api-Local", 1);
+        xhr.setRequestHeader("Accept", "application/vnd.pagerduty+json;version=2");
 
         // If we have a valid API key, authenticate using that.
         if (self.apiKey != null && self.apiKey.length == 20)
@@ -48,10 +49,11 @@ function HTTP(apiKey)
     }
 
     // Fire and forget a PUT request.
-    this.PUT = function PUT(url)
+    this.PUT = function PUT(url, data)
     {
         var req = self.prepareRequest("PUT", url);
-        req.send();
+        req.setRequestHeader("Content-Type", "application/json");
+        req.send(data);
     }
 }
 
@@ -139,7 +141,7 @@ function PagerDutyNotifier()
     self.polled = function polled()
     {
       self.pollNewIncidents();
-      if (self.showBadgeUpdates) { self.updateToolbarBadge(); }
+      self.updateToolbarBadge();
     }
 
     // This will handle the event triggered from clicking one of the notification's buttons.
@@ -148,12 +150,18 @@ function PagerDutyNotifier()
         switch (buttonIndex)
         {
             case 0: // Acknowledge
-                self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/acknowledge');
+                self.http.PUT(
+                  'https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId,
+                  '{"incident":{"type":"incident_reference","status":"acknowledged"}}'
+                );
                 if (self.openOnAck) { self.handlerNotificationClicked(notificationId); }
                 break;
 
             case 1: // Resolve
-                self.http.PUT('https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId + '/resolve');
+                self.http.PUT(
+                  'https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId,
+                  '{"incident":{"type":"incident_reference","status":"resolved"}}'
+                );
                 break;
         }
         setTimeout(function() { self.updateToolbarBadge(); }, 200); // Force a badge update, so it changes quickly.
@@ -178,7 +186,7 @@ function PagerDutyNotifier()
 
         // Construct the URL
         var url = 'https://' + self.account + '.pagerduty.com/api/v1/incidents?'
-                + 'status=triggered&'
+                + 'statuses[]=triggered&'
                 + 'since=' + since.toISOString() + '&'
                 + 'limit=5&'; // More than this would be silly to show notifications for.
         url = self.includeFilters(url);
@@ -191,18 +199,18 @@ function PagerDutyNotifier()
     self.includeFilters = function includeFilters(url)
     {
         // Limit to high urgency if that's all the user wants.
-        if (!self.includeLowUgency) { url = url + 'urgency=high&'; }
+        if (!self.includeLowUgency) { url = url + 'urgencies[]=high&'; }
 
         // Add a service filter if we have one.
         if (self.filterServices && self.filterServices != null && self.filterServices != "")
         {
-            url = url + 'service=' + self.filterServices + '&';
+            url = url + 'service_ids[]=' + self.filterServices + '&';
         }
 
         // Add a user filter if we have one.
         if (self.filterUsers && self.filterUsers != null && self.filterUsers != "")
         {
-            url = url + 'assigned_to_user=' + self.filterUsers + '&';
+            url = url + 'user_ids[]=' + self.filterUsers + '&';
         }
 
         return url;
@@ -217,17 +225,23 @@ function PagerDutyNotifier()
     // This will update the icon badge in the toolbar.
     self.updateToolbarBadge = function updateToolbarBadge()
     {
+        if (!self.showBadgeUpdates)
+        {
+            chrome.browserAction.setBadgeText({ text: '' });
+            return;
+        }
+
         // Check for any triggered incidents at all that follow our filters.
-        var url = self.includeFilters('https://' + self.account + '.pagerduty.com/api/v1/incidents?status=triggered&')
+        var url = self.includeFilters('https://' + self.account + '.pagerduty.com/api/v1/incidents?statuses[]=triggered&')
         self.http.GET(url, function(data)
         {
-          if (data.total == 0)
+          if (data.incidents.length == 0)
           {
               chrome.browserAction.setBadgeText({ text: '' });
               return;
           }
 
-          chrome.browserAction.setBadgeText({ text: '' + data.total });
+          chrome.browserAction.setBadgeText({ text: '' + data.incidents.length });
           chrome.browserAction.setBadgeBackgroundColor({ color: [166, 0, 0, 255] });
         });
     }
@@ -247,16 +261,12 @@ function PagerDutyNotifier()
             }
         ];
 
-        // Sometimes there isn't a subject, use description instead in that case.
-        title = incident.trigger_summary_data.subject;
-        if (!title) { title = incident.trigger_summary_data.description; }
-
         chrome.notifications.create(incident.id,
         {
             type: "basic",
             iconUrl: chrome.extension.getURL("images/icon-256.png"),
-            title: title,
-            message: "Service: " + incident.service.name,
+            title: incident.summary,
+            message: "Service: " + incident.service.summary,
             contextMessage: incident.urgency.charAt(0).toUpperCase() + incident.urgency.slice(1) + " Urgency",
             priority: 2,
             isClickable: true,
