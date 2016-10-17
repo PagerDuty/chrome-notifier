@@ -204,13 +204,19 @@ function PagerDutyNotifier()
         // Add a service filter if we have one.
         if (self.filterServices && self.filterServices != null && self.filterServices != "")
         {
-            url = url + 'service_ids[]=' + self.filterServices + '&';
+            self.filterServices.split(',').forEach(function(s)
+            {
+                url = url + 'service_ids[]=' + s + '&';
+            });
         }
 
         // Add a user filter if we have one.
         if (self.filterUsers && self.filterUsers != null && self.filterUsers != "")
         {
-            url = url + 'user_ids[]=' + self.filterUsers + '&';
+            self.filterUsers.split(',').forEach(function(s)
+            {
+                url = url + 'user_ids[]=' + s + '&';
+            });
         }
 
         return url;
@@ -232,16 +238,16 @@ function PagerDutyNotifier()
         }
 
         // Check for any triggered incidents at all that follow our filters.
-        var url = self.includeFilters('https://' + self.account + '.pagerduty.com/api/v1/incidents?statuses[]=triggered&')
+        var url = self.includeFilters('https://' + self.account + '.pagerduty.com/api/v1/incidents?statuses[]=triggered&total=true&')
         self.http.GET(url, function(data)
         {
-          if (data.incidents.length == 0)
+          if (data.total == 0)
           {
               chrome.browserAction.setBadgeText({ text: '' });
               return;
           }
 
-          chrome.browserAction.setBadgeText({ text: '' + data.incidents.length });
+          chrome.browserAction.setBadgeText({ text: '' + data.total });
           chrome.browserAction.setBadgeBackgroundColor({ color: [166, 0, 0, 255] });
         });
     }
