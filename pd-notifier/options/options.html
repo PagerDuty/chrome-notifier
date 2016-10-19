@@ -16,7 +16,9 @@
 
         <div class="option">
             <label>API Key</label>
+            <span id="access-status"></span>
             <input id="api-key" type="text" size="20" />
+            <button id="api-validate">Validate</button>
             <span class="info">Optionally provide an API key for your account. (20 characters).</span>
         </div>
 
@@ -31,17 +33,19 @@
         <div class="option">
             <label>Filter Users</label>
             <input id="filter-users" type="text" size="20" />
+            <button id="select-users">Select</button>
             <span class="info">Only show notifications for incidents currently assigned to these user(s). Should be one or more user IDs (comma separated, no spaces). </span>
         </div>
 
         <div class="option">
             <label>Filter Services</label>
             <input id="filter-services" type="text" size="20" />
+            <button id="select-services">Select</button>
             <span class="info">Only show notifications for incidents from these services. Should be one or more service IDs (comma sepaarated, no spaces). </span>
         </div>
 
         <hr/>
-        <h2>Additional Settings</h2>
+        <h2>Customization Settings</h2>
         <p>Some additional settings to customize your notifications.</p>
 
         <div class="option checkbox">
@@ -77,6 +81,8 @@
         <p>&#x2713; Changes saved!</p>
     </section>
 
+    <script src="../lib/pd-api.js"></script>
     <script src="options.js"></script>
+    <script src="api-validate.js"></script>
     </body>
 </html>

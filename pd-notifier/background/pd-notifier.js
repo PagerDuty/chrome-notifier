@@ -1,62 +1,6 @@
 // Simple script to poll PagerDuty API for new incidents, and trigger a Chrome notification for
 // any it finds. Will also give user ability to ack/resolve incidents right from the notifs.
 
-// Helper wrappers for HTTP methods.
-function HTTP(apiKey)
-{
-    // Members
-    var self       = this;   // Self-reference
-    self.apiKey    = apiKey; // API key used for requests.
-    self.userAgent = "pd-chrome-notifier-" + chrome.app.getDetails().version; // Will be in the X-Requested-With header of requests.
-
-    // Wrapper for generic XMLHttpRequest stuff
-    this.prepareRequest = function prepareRequest(method, url)
-    {
-        var xhr = new XMLHttpRequest();
-        xhr.open(method, url, true);
-        xhr.setRequestHeader("X-Requested-With", self.userAgent);
-        xhr.setRequestHeader("X-PagerDuty-Api-Local", 1);
-        xhr.setRequestHeader("Accept", "application/vnd.pagerduty+json;version=2");
-
-        // If we have a valid API key, authenticate using that.
-        if (self.apiKey != null && self.apiKey.length == 20)
-        {
-            xhr.setRequestHeader("Authorization", "Token token=" + self.apiKey);
-        }
-
-        return xhr;
-    }
-
-    // Perform a GET request, and trigger the callback with the result.
-    this.GET = function GET(url, callback)
-    {
-        var req = self.prepareRequest("GET", url);
-        req.onreadystatechange = function()
-        {
-            if (req.readyState == 4)
-            {
-                try
-                {
-                    callback(JSON.parse(req.responseText));
-                }
-                catch(e)
-                {
-                    // Ignore any parsing errors and carry on.
-                }
-            }
-        };
-        req.send();
-    }
-
-    // Fire and forget a PUT request.
-    this.PUT = function PUT(url, data)
-    {
-        var req = self.prepareRequest("PUT", url);
-        req.setRequestHeader("Content-Type", "application/json");
-        req.send(data);
-    }
-}
-
 // Will poll continually at the pollInterval until it's destroyed (_destruct() is called).
 function PagerDutyNotifier()
 {
@@ -72,7 +16,7 @@ function PagerDutyNotifier()
     self.requireInteraction = false; // Whether the notification will require user interaction to dismiss.
     self.filterServices     = null;  // ServiceID's of services to only show alerts for.
     self.filterUsers        = null;  // UserID's of users to only show alerts for.
-    self.http               = null;  // Helper for HTTP calls.
+    self.pdapi              = null;  // Helper for API calls.
     self.poller             = null;  // This points to the interval function so we can clear it if needed.
     self.showBadgeUpdates   = false; // Whether we show updates on the toolbar badge.
 
@@ -86,7 +30,7 @@ function PagerDutyNotifier()
             // config. Once they save, a reload will be triggered and things will kick off.
             if (self.account == null || self.account == '') { return; }
 
-            self.http = new HTTP(self.apiKey);
+            self.pdapi = new PDAPI(self.apiKey);
             self.setupPoller();
         });
     }
@@ -150,7 +94,7 @@ function PagerDutyNotifier()
         switch (buttonIndex)
         {
             case 0: // Acknowledge
-                self.http.PUT(
+                self.pdapi.PUT(
                   'https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId,
                   '{"incident":{"type":"incident_reference","status":"acknowledged"}}'
                 );
@@ -158,7 +102,7 @@ function PagerDutyNotifier()
                 break;
 
             case 1: // Resolve
-                self.http.PUT(
+                self.pdapi.PUT(
                   'https://' + self.account + '.pagerduty.com/api/v1/incidents/' + notificationId,
                   '{"incident":{"type":"incident_reference","status":"resolved"}}'
                 );
@@ -192,7 +136,7 @@ function PagerDutyNotifier()
         url = self.includeFilters(url);
 
         // Make the request.
-        self.http.GET(url, self.parseIncidents);
+        self.pdapi.GET(url, self.parseIncidents);
     }
 
     // Adds filters to a URL we'll be using in a request
@@ -239,7 +183,7 @@ function PagerDutyNotifier()
 
         // Check for any triggered incidents at all that follow our filters.
         var url = self.includeFilters('https://' + self.account + '.pagerduty.com/api/v1/incidents?statuses[]=triggered&total=true&')
-        self.http.GET(url, function(data)
+        self.pdapi.GET(url, function(data)
         {
           if (data.total == 0)
           {
