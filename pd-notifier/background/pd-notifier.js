@@ -275,6 +275,19 @@ function reloadNotifier()
     _pdNotifier = new PagerDutyNotifier();
 }
 
+// Add option to clear all notifications to icon context-menu.
+chrome.contextMenus.removeAll();
+chrome.contextMenus.create({
+      title: "Clear all notifications",
+      contexts: ["browser_action"],
+      onclick: function() {
+        chrome.notifications.getAll(function(notifs)
+        {
+            for (var i in notifs) { chrome.notifications.clear(i); }
+        });
+      }
+});
+
 // Listen for Chrome Alarms and retrigger the notifier when one is caught.
 chrome.alarms.onAlarm.addListener(function(alarm) { reloadNotifier(); });
 
