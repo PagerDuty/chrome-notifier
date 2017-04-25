@@ -73,6 +73,15 @@
             <label>Show triggered count on icon?</label>
             <input id="show-badge" type="checkbox" />
         </div>
+        <div class="option select">
+            <label>Clicking icon should show which incidents?</label>
+            <select id="badge-location" name="badge-location">
+              <option id="option-open" value="open">Open</option>
+              <option id="option-triggered" value="triggered">Triggered</option>
+              <option id="option-acknowledged" value="acknowledged">Acknowledged</option>
+              <option id="option-any" value="any">Any Status</option>
+            </select>
+        </div>
 
         <button id="save">Save</button>
     </main>

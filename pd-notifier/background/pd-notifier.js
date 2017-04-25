@@ -19,6 +19,7 @@ function PagerDutyNotifier()
     self.pdapi              = null;  // Helper for API calls.
     self.poller             = null;  // This points to the interval function so we can clear it if needed.
     self.showBadgeUpdates   = false; // Whether we show updates on the toolbar badge.
+    self.badgeLocation      = null;  // Which view should be linked to from the badge icon.
 
     // Ctor
     self._construct = function _construct()
@@ -56,7 +57,8 @@ function PagerDutyNotifier()
             pdRequireInteraction: false,
             pdFilterServices: null,
             pdFilterUsers: null,
-            pdShowBadgeUpdates: false
+            pdShowBadgeUpdates: false,
+            pdBadgeLocation: 'triggered',
         },
         function(items)
         {
@@ -70,6 +72,7 @@ function PagerDutyNotifier()
             self.filterServices     = items.pdFilterServices;
             self.filterUsers        = items.pdFilterUsers;
             self.showBadgeUpdates   = items.pdShowBadgeUpdates;
+            self.badgeLocation      = items.pdBadgeLocation;
             callback(true);
         });
     }
@@ -196,6 +199,26 @@ function PagerDutyNotifier()
         });
     }
 
+    // This will open a tab to the dashboard using the relevant user settings.
+    self.openDashboard = function openDashboard()
+    {
+        // Determine the correct URL based on user's options.
+        statuses = '';
+        switch(self.badgeLocation)
+        {
+          case 'open': statuses = '?status=triggered,acknowledged'; break;
+          case 'triggered': statuses = '?status=triggered'; break;
+          case 'acknowledged': statuses = '?status=acknowledged'; break;
+          case 'any': statuses = '?status=acknowledged,triggered,resolved'; break;
+        }
+
+        console.log(statuses);
+        console.log(self.badgeLocation);
+
+        // Open the tab
+        chrome.tabs.create({ 'url': 'https://' + self.account + '.pagerduty.com/incidents' + statuses })
+    }
+
     // This will trigger the actual notification based on an incident object.
     self.triggerNotification = function triggerNotification(incident)
     {
@@ -252,7 +275,7 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 // Add event handler for the toolbar icon click.
 chrome.browserAction.onClicked.addListener(function(tab)
 {
-    chrome.tabs.create({ 'url': 'https://' + chrome.extension.getBackgroundPage().getNotifier().account + '.pagerduty.com/incidents?status=triggered' })
+    chrome.extension.getBackgroundPage().getNotifier().openDashboard();
 });
 
 // If this is the first installation, show the options page so user can set up their settings.

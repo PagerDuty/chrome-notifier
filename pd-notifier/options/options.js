@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function ()
         pdRequireInteraction: false,
         pdFilterServices: '',
         pdFilterUsers: '',
-        pdShowBadgeUpdates: false
+        pdShowBadgeUpdates: false,
+        pdBadgeLocation: ''
     },
     function(items)
     {
@@ -41,6 +42,16 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('filter-services').value       = items.pdFilterServices;
         getElement('filter-users').value          = items.pdFilterUsers;
         getElement('show-badge').checked          = items.pdShowBadgeUpdates;
+
+        // Default to "Triggered" for badgeLocation.
+        if (items.pdBadgeLocation)
+        {
+          getElement('option-' + items.pdBadgeLocation).selected = true;
+        }
+        else
+        {
+          getElement('option-triggered').selected = true;
+        }
     });
 });
 
@@ -55,6 +66,10 @@ document.getElementById('save').addEventListener('click', function ()
         chrome.storage.sync.set({ pdAPIKey: getElement('api-key').value });
     }
 
+    // Get the correct badge-location value
+    badgeLocation = getElement('badge-location');
+    badgeLocation = badgeLocation.options[badgeLocation.selectedIndex].value;
+
     chrome.storage.sync.set(
     {
         pdAccountSubdomain:   getElement('account-subdomain').value,
@@ -65,7 +80,8 @@ document.getElementById('save').addEventListener('click', function ()
         pdRequireInteraction: getElement('require-interaction').checked,
         pdFilterServices:     getElement('filter-services').value,
         pdFilterUsers:        getElement('filter-users').value,
-        pdShowBadgeUpdates:   getElement('show-badge').checked
+        pdShowBadgeUpdates:   getElement('show-badge').checked,
+        pdBadgeLocation:      badgeLocation
     },
     function()
     {
