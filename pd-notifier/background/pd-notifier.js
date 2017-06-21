@@ -261,21 +261,28 @@ function PagerDutyNotifier()
 // Add event handlers for button/notification clicks, and delegate to the currently active notifier object.
 chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
 {
-    var bgpg = chrome.extension.getBackgroundPage();
-    bgpg.getNotifier().handlerButtonClicked(notificationId, buttonIndex);
-    chrome.notifications.clear(notificationId);
+    chrome.runtime.getBackgroundPage(function(bgpg)
+    {
+        bgpg.getNotifier().handlerButtonClicked(notificationId, buttonIndex);
+        chrome.notifications.clear(notificationId);
+    });
 });
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
-    var bgpg = chrome.extension.getBackgroundPage();
-    bgpg.getNotifier().handlerNotificationClicked(notificationId);
-    chrome.notifications.clear(notificationId);
+    chrome.runtime.getBackgroundPage(function(bgpg)
+    {
+        bgpg.getNotifier().handlerNotificationClicked(notificationId);
+        chrome.notifications.clear(notificationId);
+    });
 });
 
 // Add event handler for the toolbar icon click.
 chrome.browserAction.onClicked.addListener(function(tab)
 {
-    chrome.extension.getBackgroundPage().getNotifier().openDashboard();
+    chrome.runtime.getBackgroundPage(function(bgpg)
+    {
+        bgpg.getNotifier().openDashboard();
+    });
 });
 
 // If this is the first installation, show the options page so user can set up their settings.
@@ -299,20 +306,33 @@ function reloadNotifier()
 }
 
 // Add option to clear all notifications to icon context-menu.
-chrome.contextMenus.removeAll();
-chrome.contextMenus.create({
-      title: "Clear all notifications",
-      contexts: ["browser_action"],
-      onclick: function() {
+chrome.runtime.onInstalled.addListener(function() {
+    chrome.contextMenus.create({
+        title: "Clear all notifications",
+        id: "pd_clear_all",
+        contexts: ["browser_action"],
+    });
+});
+
+chrome.contextMenus.onClicked.addListener(function(info, tab)
+{
+    if (info.menuItemId === "pd_clear_all")
+    {
         chrome.notifications.getAll(function(notifs)
         {
             for (var i in notifs) { chrome.notifications.clear(i); }
         });
-      }
+    }
 });
 
 // Listen for Chrome Alarms and retrigger the notifier when one is caught.
-chrome.alarms.onAlarm.addListener(function(alarm) { reloadNotifier(); });
+chrome.alarms.onAlarm.addListener(function(alarm)
+{
+    chrome.runtime.getBackgroundPage(function(bgpg)
+    {
+        bgpg.reloadNotifier();
+    });
+});
 
 // Sets up a Chrome Alarm to retrigger the notifier every so often, to make sure it's always running.
 chrome.alarms.create("pagerduty-notifier", { periodInMinutes: 1 });

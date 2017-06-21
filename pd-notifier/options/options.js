@@ -86,7 +86,10 @@ document.getElementById('save').addEventListener('click', function ()
     function()
     {
         // Tell the notifier to reload itself with the latest configuration.
-        chrome.extension.getBackgroundPage().reloadNotifier();
+        chrome.runtime.getBackgroundPage(function(bgpg)
+        {
+          bgpg.reloadNotifier();
+        });
 
         // Let the user know things saved properly.
         getElement('saved').className = 'saved';
