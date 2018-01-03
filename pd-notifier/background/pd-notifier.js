@@ -311,6 +311,7 @@ chrome.runtime.onInstalled.addListener(function() {
         title: "Clear all notifications",
         id: "pd_clear_all",
         contexts: ["browser_action"],
+        visible: true
     });
 });
 
