@@ -306,13 +306,11 @@ function reloadNotifier()
 }
 
 // Add option to clear all notifications to icon context-menu.
-chrome.runtime.onInstalled.addListener(function() {
-    chrome.contextMenus.create({
-        title: "Clear all notifications",
-        id: "pd_clear_all",
-        contexts: ["browser_action"],
-        visible: true
-    });
+chrome.contextMenus.create({
+    title: "Clear all notifications",
+    id: "pd_clear_all",
+    contexts: ["browser_action"],
+    visible: true
 });
 
 chrome.contextMenus.onClicked.addListener(function(info, tab)
