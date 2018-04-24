@@ -137,25 +137,25 @@ function validateConfiguration()
     }
 
     // Filter services shouldn't have any spaces
-    e = getElement('filter-services');
-    e.value = e.value.replace(/\s+/g, '');
-    if (e.value !== ""
-        && e.value.indexOf(" ") > -1)
-    {
-        e.className = "bad";
-        isValid = false;
-    }
+   // e = getElement('filter-services');
+   // e.value = e.value.replace(/\s+/g, '');
+   // if (e.value !== ""
+   //     && e.value.indexOf(" ") > -1)
+   // {
+   //     e.className = "bad";
+   //     isValid = false;
+   // }
 
 
     // Filter users shouldn't have any spaces.
-    e = getElement('filter-users');
-    e.value = e.value.replace(/\s+/g, '');
-    if (e.value !== ""
-        && e.value.indexOf(" ") > -1)
-    {
-        e.className = "bad";
-        isValid = false;
-    }
+    // e = getElement('filter-users');
+   // e.value = e.value.replace(/\s+/g, '');
+   // if (e.value !== ""
+   //     && e.value.indexOf(" ") > -1)
+   // {
+   //     e.className = "bad";
+   //     isValid = false;
+   // }
 
     return isValid;
 }
