@@ -23,7 +23,7 @@ function statusOK(message = '')
 function statusWarning(message = '')
 {
     getElement('access-status').className = 'warn';
-    getElement('access-status').innerHTML = '&#9888; ' + message;
+    getElement('access-status').innerHTML = '&#x26a0; ' + message;
 }
 
 function validateAPIKeyAccess(apiKey)
