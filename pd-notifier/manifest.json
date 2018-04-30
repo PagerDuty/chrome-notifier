@@ -3,7 +3,7 @@
     "name": "PagerDuty Notifier",
     "short_name": "PD Notifier",
     "description": "Desktop notifications for your PagerDuty incidents.",
-    "version": "0.18",
+    "version": "0.19",
     "author": "Rich Adams (https://richadams.me)",
     "icons": {
          "16": "images/icon-16.png",
@@ -21,7 +21,7 @@
         "contextMenus"
     ],
     "options_ui": {
-        "chrome_style": true,
+        "open_in_tab": true,
         "page": "options/options.html"
     },
     "background": {

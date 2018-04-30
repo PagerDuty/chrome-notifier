@@ -1,7 +1,18 @@
 /* Main Layout
 ***************************************************************************************************/
+
+html {
+    background: #353535;
+    font-size: 1.1em;
+}
+
 body {
-    margin: 1em;
+    width: 500px;
+    background: #fff;
+    margin: 2em auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 0em 2em;
 }
 
 /* Typography
@@ -12,11 +23,19 @@ body {
     padding-left: 1.5em;
 }
 
+h1 {
+    color: #353535;
+    background: url("../images/icon-64.png") center left no-repeat;
+    background-size: contain;
+    padding-left: 1.5em;
+    font-size: 1.7em;
+}
+
 h2 {
     margin-bottom: 0.1em;
-    color: #47ba04;
+    color: #25c151;
     font-weight: bold;
-    font-size: 1.6em;
+    font-size: 1.5em;
     margin-bottom: -0.2em;
 }
 
@@ -30,8 +49,17 @@ input[type=number] {
     border-radius: 0px;
     padding: 0.4em;
     font-family: inherit;
+    width: 95%;
 
     -webkit-transition: all 0.2s ease-in-out;
+}
+
+input#account-subdomain {
+    width: 10em;
+}
+input#api-key {
+    width: 13em;
+    margin-right: .5em;
 }
 
 input.bad {
@@ -62,33 +90,46 @@ input[type=number]:focus {
 }
 
 button {
-    border: 1px solid #a9a9a9;
-    padding: 3px 5px 3px 5px;
-    background: #f5f5f5;
-    border-radius: 3px;
-    background-image: -webkit-gradient(
-       linear,
-       left bottom,
-       left top,
-       color-stop(0.44, rgb(223,223,223)),
-       color-stop(0.72, rgb(245,245,245))
-    );
-    -webkit-transition: all 0.2s ease-in-out;
+    padding: 5px 12px;
+    font-size: 1.1em;
+    border-radius: 4px;
+    cursor: pointer;
+
+    border: 1px solid #767676;
+    box-shadow: 0 1px 1px rgba(0,0,0,.5);
+    background: #fff;
+    color: #555;
 }
 
 button:active {
-    background: #dfdfdf;
-    background-image: -webkit-gradient(
-       linear,
-       left bottom,
-       left top,
-       color-stop(0.44, rgb(245,245,245)),
-       color-stop(0.72, rgb(223,223,223))
-    );
+    border: 1px solid #363636;
+    background: #f3f3f3;
+    box-shadow: none;
+    color: #363636;
 }
 
 button:hover {
-    border: 1px solid #7f7f7f;
+    border: 1px solid #767676;
+    background: #f3f3f3;
+}
+
+button#save {
+    float: right;
+
+    border: 1px solid transparent;
+    background: #25c151;
+    color: #fff;
+}
+
+button#save:active {
+    border: 1px solid #2f8b48;
+    background: #22a648;
+    box-shadow: none;
+}
+
+button#save:hover {
+    border: 1px solid #2f8b48;
+    box-shadow: 0 0 4px #25c151;
 }
 
 /* Options
@@ -125,28 +166,30 @@ p {
 hr {
     border: none;
     height: 1px;
-    background: #47ba04;
+    background: #25c151;
 }
 
 .notice {
     display: block;
-    background: #f3f3f3;
+    background: #61b3f2;
     padding: 1em;
     border-radius: 5px;
     margin-bottom: 2em;
+    color: #fff;
 }
 
-.option.checkbox input {
-    margin-top: -0.5em;
+.option.checkbox {
+  margin-bottom: -.7em;
 }
 
 .option.checkbox label {
     padding-left: 1.8em;
-    margin-bottom: -1.5em;
+    padding-bottom: 0em;
+    margin-bottom: -1.25em;
 }
 
-.option.checkbox {
-    margin-top: -0.8em;
+.option.select label {
+    display: inline;
 }
 
 /* Saved Popup
@@ -159,7 +202,7 @@ hr {
     width: 13em;
     height: 2.2em;
     margin-left: -6em;
-    background: #47ba04;
+    background: #25c151;
     border-radius: 3px;
     font-weight: bold;
     color: #fff;
@@ -188,19 +231,19 @@ hr {
 
 #api-validate{
     position: absolute;
-    padding: 0.4em 0.4em 0.5em 0.4em;
+    padding: 0.3em 0.4em 0.4em 0.4em;
     width: 5em;
 }
 
 #access-status {
     position: relative;
-    margin-left: 4.3em;
+    margin-left: 9.7em;
     margin-top: -2em;
     margin-bottom: 0.1em;
     height: 1em;
     float: left;
     border-radius: 3px;
-    padding: 0em 0.5em 0.5em 0.5em;
+    padding: 0.1em 0.5em 0.5em 0.5em;
     font-weight: bold;
     color: #fff;
     font-size: 1em;
@@ -208,25 +251,25 @@ hr {
 }
 
 #access-status.ok {
-    background: #47ba04;
+    background: #25c151;
 }
 
 #access-status.ko {
-    background: #b70303;
+    background: #c62818;
 }
 
 #access-status.warn {
-    background: #f4ad42;
+    background: #f8991c;
 }
 
 #access-status.loading {
     background: #fff;
     border-radius: 50px;
-    border: 1px solid #888;
+    border: 1px solid #25c151;
     width: 15px;
     height: 15px;
     padding: 0px;
-    border-color: transparent #888 #888 #888;
+    border-color: transparent #25c151 #25c151 #25c151;
 
     -webkit-animation: 'rotate' 1s infinite linear;
     animation: 'rotate' 1s infinite linear;

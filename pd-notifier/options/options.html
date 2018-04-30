@@ -7,19 +7,20 @@
 </head>
 <body>
     <main>
+        <button id="save">Save</button>
+        <h1>Notifier Configuration</h1>
         <h2>Account Settings</h2>
-        <p>Basic notifier setup, all of the options relating to your account.</p>
         <div class="option">
-        <label>Account Subdomain <span class="required">*</span></label>
+        <label>PagerDuty Subdomain <span class="required">*</span></label>
             https://<input id="account-subdomain" type="text" size="20" />.pagerduty.com
         </div>
 
         <div class="option">
-            <label>API Key</label>
+            <label>PagerDuty API Key</label>
             <span id="access-status"></span>
             <input id="api-key" type="text" size="20" />
             <button id="api-validate">Validate</button>
-            <span class="info">Optionally provide an API key for your account. (20 characters).</span>
+            <span class="info">Optionally provide an API key for your PagerDuty account. (20 characters).</span>
         </div>
 
         <div class="notice">
@@ -28,17 +29,17 @@
 
         <hr/>
         <h2>Notification Filters</h2>
-        <p>For if you only want to get notifications for certain users or services.</p>
+        <p>Apply filters so you only get PagerDuty notifications for certain users or services.</p>
 
         <div class="option">
             <label>Filter Users</label>
-            <input id="filter-users" type="text" size="20" />
+            <input id="filter-users" type="text" size="20" placeholder="P123456,PX4MPLE..." />
             <span class="info">Only show notifications for incidents currently assigned to these user(s). Should be one or more user IDs (comma separated, no spaces). </span>
         </div>
 
         <div class="option">
             <label>Filter Services</label>
-            <input id="filter-services" type="text" size="20" />
+            <input id="filter-services" type="text" size="20" placeholder="P123456,PX4MPLE..." />
             <span class="info">Only show notifications for incidents from these services. Should be one or more service IDs (comma sepaarated, no spaces). </span>
         </div>
 
@@ -80,8 +81,6 @@
               <option id="option-any" value="any">Any Status</option>
             </select>
         </div>
-
-        <button id="save">Save</button>
     </main>
 
     <section id="saved">
