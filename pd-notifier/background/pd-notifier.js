@@ -188,14 +188,28 @@ function PagerDutyNotifier()
         var url = self.includeFilters('https://' + self.account + '.pagerduty.com/api/v1/incidents?statuses[]=triggered&total=true&')
         self.pdapi.GET(url, function(data)
         {
-          if (data.total == 0)
-          {
-              chrome.browserAction.setBadgeText({ text: '' });
-              return;
-          }
+            // If there was an error in the response, show "Err" and log it.
+            if (data.error != null)
+            {
+                console.error("PagerDuty API returned an error while getting the incident count for the toolbar icon.", {
+                  api_url: url,
+                  error_returned: data.error
+                });
+                chrome.browserAction.setBadgeText({ text: 'Err.' });
+                chrome.browserAction.setBadgeBackgroundColor({ color: [90, 90, 90, 255] });
+                return;
+            }
 
-          chrome.browserAction.setBadgeText({ text: '' + data.total });
-          chrome.browserAction.setBadgeBackgroundColor({ color: [166, 0, 0, 255] });
+            // If there are no incidents, or an error in the response, show nothing on badge.
+            if (data.total == null || data.total == 0)
+            {
+                chrome.browserAction.setBadgeText({ text: '' });
+                return;
+            }
+
+            // Otherwise, we have incidents, show the count.
+            chrome.browserAction.setBadgeText({ text: '' + data.total });
+            chrome.browserAction.setBadgeBackgroundColor({ color: [189, 0, 0, 255] });
         });
     }
 
@@ -211,9 +225,6 @@ function PagerDutyNotifier()
           case 'acknowledged': statuses = '?status=acknowledged'; break;
           case 'any': statuses = '?status=acknowledged,triggered,resolved'; break;
         }
-
-        console.log(statuses);
-        console.log(self.badgeLocation);
 
         // Open the tab
         chrome.tabs.create({ 'url': 'https://' + self.account + '.pagerduty.com/incidents' + statuses })

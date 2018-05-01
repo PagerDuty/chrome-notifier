@@ -10,9 +10,9 @@ body {
     width: 500px;
     background: #fff;
     margin: 2em auto;
-    border: 1px solid #ddd;
+    border: 1px solid #353535;
     border-radius: 5px;
-    padding: 0em 2em;
+    padding: 0em 1.5em;
 }
 
 /* Typography
@@ -89,6 +89,10 @@ input[type=number]:focus {
     border-radius: 2px;
 }
 
+input::placeholder {
+    color: #bbb;
+}
+
 button {
     padding: 5px 12px;
     font-size: 1.1em;
@@ -124,12 +128,11 @@ button#save {
 button#save:active {
     border: 1px solid #2f8b48;
     background: #22a648;
-    box-shadow: none;
+    box-shadow: 0 0 4px #25c151;
 }
 
 button#save:hover {
-    border: 1px solid #2f8b48;
-    box-shadow: 0 0 4px #25c151;
+    background: #22a648;
 }
 
 /* Options
@@ -146,7 +149,6 @@ p {
 
 .option label {
     display: block;
-    width: 22em;
     text-align: left;
     font-weight: bold;
     padding-bottom: 0.5em;
@@ -165,16 +167,19 @@ p {
 
 hr {
     border: none;
-    height: 1px;
-    background: #25c151;
+    height: 3px;
+    background: #353535;
+    width: calc(100% + 3em);
+    margin-left: -1.5em;
 }
 
 .notice {
     display: block;
-    background: #61b3f2;
-    padding: 1em;
-    border-radius: 5px;
-    margin-bottom: 2em;
+    background: #2196f3;
+    padding: 1em 1.5em;
+    margin-bottom: 1em;
+    width: 100%;
+    margin-left: -1.5em;
     color: #fff;
 }
 
@@ -190,6 +195,25 @@ hr {
 
 .option.select label {
     display: inline;
+}
+
+span.ack {
+    background: url("../images/icon-acknowledge.png") center left no-repeat;
+    background-size: 1.2em 1.2em;
+    padding-left: 1.2em;
+    color: #f8991c;
+}
+
+span.resolve {
+    background: url("../images/icon-resolve.png") center left no-repeat;
+    background-size: 1.2em 1.2em;
+    padding-left: 1.2em;
+    color: #25c151;
+}
+
+#badge-example {
+    margin-bottom: -0.5em;
+    margin-left: 0.2em;
 }
 
 /* Saved Popup

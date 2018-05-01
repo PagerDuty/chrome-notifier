@@ -9,7 +9,7 @@
     <main>
         <button id="save">Save</button>
         <h1>Notifier Configuration</h1>
-        <h2>Account Settings</h2>
+        <h2>Account and Authentication</h2>
         <div class="option">
         <label>PagerDuty Subdomain <span class="required">*</span></label>
             https://<input id="account-subdomain" type="text" size="20" />.pagerduty.com
@@ -24,12 +24,15 @@
         </div>
 
         <div class="notice">
-        If you don't provide an API key, you will only receive notifications when your website session is active. If you provide a read-only API key, you will get notifications, but you will be unable to acknowledge or resolve them from the notification.
+        If you don't provide an API key, you will only receive notifications when your website session is active.
+        </div>
+
+        <div class="notice">
+        If you provide a read-only API key, you will get notifications, but you will be unable to acknowledge/resolve them from the notification. Enable the "Remove Acknowledge &amp; Resolve buttons?" customization option below in that case.
         </div>
 
         <hr/>
         <h2>Notification Filters</h2>
-        <p>Apply filters so you only get PagerDuty notifications for certain users or services.</p>
 
         <div class="option">
             <label>Filter Users</label>
@@ -44,17 +47,15 @@
         </div>
 
         <hr/>
-        <h2>Customization Settings</h2>
-        <p>Some additional settings to customize your notifications.</p>
+        <h2>Customizations</h2>
 
         <div class="option checkbox">
             <label>Include low urgency incidents?</label>
             <input id="low-urgency" type="checkbox" />
         </div>
         <div class="option checkbox">
-            <label>Remove Ack/Resolve buttons?</label>
+            <label>Remove <span class="ack">Acknowledge</span> &amp; <span class="resolve">Resolve</span> buttons?</label>
             <input id="remove-buttons" type="checkbox" />
-            <span class="info">If you only want to use a read-only API key, then you can select this option to remove the action buttons.</span>
         </div>
         <div class="option checkbox">
             <label>Open incident in new tab on acknowledge?</label>
@@ -69,11 +70,11 @@
             <input id="notif-sound" type="checkbox" />
         </div>
         <div class="option checkbox">
-            <label>Show triggered count on icon?</label>
+            <label>Show triggered incident count on toolbar icon? <img id="badge-example" src="../images/badge-example.png" alt="Example of incident count badge." /></label>
             <input id="show-badge" type="checkbox" />
         </div>
         <div class="option select">
-            <label>Clicking icon should show which incidents?</label>
+            <label>Clicking toolbar icon should show which incidents?</label>
             <select id="badge-location" name="badge-location">
               <option id="option-open" value="open">Open</option>
               <option id="option-triggered" value="triggered">Triggered</option>
@@ -81,6 +82,9 @@
               <option id="option-any" value="any">Any Status</option>
             </select>
         </div>
+
+        <hr/>
+        <p><em>This project is <a href="https://github.com/PagerDuty/chrome-notifier">open-source on GitHub</a> and we appreciate all friendly contributions.</em></p>
     </main>
 
     <section id="saved">
