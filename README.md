@@ -11,6 +11,10 @@ The extension can be used without having to provide an API key, however, in that
 
 If you decide to use an API key instead, you can use either a read-only key, or a read/write key. If you use a read-only key, then the Acknowledge and Resolve buttons will not function, as they would not have permission to update your incidents. If you prefer to use a read-only key, you can configure the extension to remove these action buttons from the notifications.
 
+## Generating an API Key
+
+See "[Generating a General Access REST API Key](https://support.pagerduty.com/docs/using-the-api#section-generating-a-general-access-rest-api-key)" for instructions on how to get an API key.
+
 ## Configuration Options
 
 * **Account Subdomain** - (Required) The subdomain for your PagerDuty account. If your account is https://example.pagerduty.com, you would use "example".
