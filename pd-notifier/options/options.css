@@ -2,7 +2,7 @@
 ***************************************************************************************************/
 
 html {
-    background: #353535;
+    background: #f7f7f7;
     font-size: 1.1em;
 }
 
@@ -10,7 +10,7 @@ body {
     width: 500px;
     background: #fff;
     margin: 2em auto;
-    border: 1px solid #353535;
+    border: 3px solid #353535;
     border-radius: 5px;
     padding: 0em 1.5em;
 }
@@ -33,7 +33,7 @@ h1 {
 
 h2 {
     margin-bottom: 0.1em;
-    color: #25c151;
+    color: #06ac38;
     font-weight: bold;
     font-size: 1.5em;
     margin-bottom: -0.2em;
@@ -121,14 +121,14 @@ button#save {
     float: right;
 
     border: 1px solid transparent;
-    background: #25c151;
+    background: #06ac38;
     color: #fff;
 }
 
 button#save:active {
     border: 1px solid #2f8b48;
     background: #22a648;
-    box-shadow: 0 0 4px #25c151;
+    box-shadow: 0 0 4px #06ac38;
 }
 
 button#save:hover {
@@ -175,7 +175,7 @@ hr {
 
 .notice {
     display: block;
-    background: #2196f3;
+    background: #157ee0;
     padding: 1em 1.5em;
     margin-bottom: 1em;
     width: 100%;
@@ -208,7 +208,7 @@ span.resolve {
     background: url("../images/icon-resolve.png") center left no-repeat;
     background-size: 1.2em 1.2em;
     padding-left: 1.2em;
-    color: #25c151;
+    color: #06ac38;
 }
 
 #badge-example {
@@ -226,7 +226,7 @@ span.resolve {
     width: 13em;
     height: 2.2em;
     margin-left: -6em;
-    background: #25c151;
+    background: #06ac38;
     border-radius: 3px;
     font-weight: bold;
     color: #fff;
@@ -275,7 +275,7 @@ span.resolve {
 }
 
 #access-status.ok {
-    background: #25c151;
+    background: #06ac38;
 }
 
 #access-status.ko {
@@ -289,11 +289,11 @@ span.resolve {
 #access-status.loading {
     background: #fff;
     border-radius: 50px;
-    border: 1px solid #25c151;
+    border: 1px solid #06ac38;
     width: 15px;
     height: 15px;
     padding: 0px;
-    border-color: transparent #25c151 #25c151 #25c151;
+    border-color: transparent #06ac38 #06ac38 #06ac38;
 
     -webkit-animation: 'rotate' 1s infinite linear;
     animation: 'rotate' 1s infinite linear;
