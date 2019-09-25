@@ -14,8 +14,9 @@ function PagerDutyNotifier()
     self.openOnAck          = false; // Whether to open the incident in a new tab when ack-ing.
     self.notifSound         = false; // Whether to play a notification sound.
     self.requireInteraction = false; // Whether the notification will require user interaction to dismiss.
-    self.filterServices     = null;  // ServiceID's of services to only show alerts for.
-    self.filterUsers        = null;  // UserID's of users to only show alerts for.
+    self.basicFilters = {}
+    for (var filter in basicFilters)
+        self.basicFilters[filter] = null;
     self.pdapi              = null;  // Helper for API calls.
     self.poller             = null;  // This points to the interval function so we can clear it if needed.
     self.showBadgeUpdates   = false; // Whether we show updates on the toolbar badge.
@@ -46,20 +47,7 @@ function PagerDutyNotifier()
     // This loads any configuration we have stored with chrome.storage
     self.loadConfiguration = function loadConfiguration(callback)
     {
-        chrome.storage.sync.get(
-        {
-            pdAccountSubdomain: '',
-            pdAPIKey: null,
-            pdIncludeLowUrgency: false,
-            pdRemoveButtons: false,
-            pdOpenOnAck: false,
-            pdNotifSound: false,
-            pdRequireInteraction: false,
-            pdFilterServices: null,
-            pdFilterUsers: null,
-            pdShowBadgeUpdates: false,
-            pdBadgeLocation: 'triggered',
-        },
+        chrome.storage.sync.get( storageDefaults,
         function(items)
         {
             self.account            = items.pdAccountSubdomain;
@@ -69,8 +57,9 @@ function PagerDutyNotifier()
             self.openOnAck          = items.pdOpenOnAck;
             self.notifSound         = items.pdNotifSound;
             self.requireInteraction = items.pdRequireInteraction;
-            self.filterServices     = items.pdFilterServices;
-            self.filterUsers        = items.pdFilterUsers;
+            for (var filter in basicFilters) {
+                self.basicFilters[filter] = items[basicFilters[filter]];
+            }
             self.showBadgeUpdates   = items.pdShowBadgeUpdates;
             self.badgeLocation      = items.pdBadgeLocation;
             callback(true);
@@ -148,22 +137,16 @@ function PagerDutyNotifier()
         // Limit to high urgency if that's all the user wants.
         if (!self.includeLowUgency) { url = url + 'urgencies[]=high&'; }
 
-        // Add a service filter if we have one.
-        if (self.filterServices && self.filterServices != null && self.filterServices != "")
-        {
-            self.filterServices.split(',').forEach(function(s)
+        // Limit to users/services/teams
+        for (var filter in basicFilters) {
+            var value = self.basicFilters[filter]
+            if (value && value != null && value != "")
             {
-                url = url + 'service_ids[]=' + s + '&';
-            });
-        }
-
-        // Add a user filter if we have one.
-        if (self.filterUsers && self.filterUsers != null && self.filterUsers != "")
-        {
-            self.filterUsers.split(',').forEach(function(s)
-            {
-                url = url + 'user_ids[]=' + s + '&';
-            });
+                value.split(',').forEach(function(s)
+                {
+                    url = url + filter + '_ids[]=' + s + '&';
+                });
+            }
         }
 
         return url;

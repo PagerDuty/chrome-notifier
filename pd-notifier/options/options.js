@@ -14,21 +14,7 @@ function isAPIKeyObfuscated(key)
 // Add an event listener to restore previously save configuration.
 document.addEventListener('DOMContentLoaded', function ()
 {
-    chrome.storage.sync.get(
-    {
-        // Defaults
-        pdAccountSubdomain: '',
-        pdAPIKey: '',
-        pdIncludeLowUrgency: false,
-        pdRemoveButtons: false,
-        pdOpenOnAck: false,
-        pdNotifSound: false,
-        pdRequireInteraction: false,
-        pdFilterServices: '',
-        pdFilterUsers: '',
-        pdShowBadgeUpdates: false,
-        pdBadgeLocation: ''
-    },
+    chrome.storage.sync.get(storageDefaults,
     function(items)
     {
         // Update the page elements appropriately.
@@ -39,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('open-on-ack').checked         = items.pdOpenOnAck;
         getElement('notif-sound').checked         = items.pdNotifSound;
         getElement('require-interaction').checked = items.pdRequireInteraction;
-        getElement('filter-services').value       = items.pdFilterServices;
-        getElement('filter-users').value          = items.pdFilterUsers;
+        for (var filter in basicFilters)
+            getFilterElement(filter).value        = items[basicFilters[filter]];
         getElement('show-badge').checked          = items.pdShowBadgeUpdates;
 
         // Default to "Triggered" for badgeLocation.
@@ -70,19 +56,20 @@ document.getElementById('save').addEventListener('click', function ()
     badgeLocation = getElement('badge-location');
     badgeLocation = badgeLocation.options[badgeLocation.selectedIndex].value;
 
-    chrome.storage.sync.set(
-    {
+    var save_object = {
         pdAccountSubdomain:   getElement('account-subdomain').value,
         pdIncludeLowUrgency:  getElement('low-urgency').checked,
         pdRemoveButtons:      getElement('remove-buttons').checked,
         pdOpenOnAck:          getElement('open-on-ack').checked,
         pdNotifSound:         getElement('notif-sound').checked,
         pdRequireInteraction: getElement('require-interaction').checked,
-        pdFilterServices:     getElement('filter-services').value,
-        pdFilterUsers:        getElement('filter-users').value,
         pdShowBadgeUpdates:   getElement('show-badge').checked,
         pdBadgeLocation:      badgeLocation
-    },
+    }
+    for (var filter in basicFilters)
+        save_object[basicFilters[filter]] = getFilterElement(filter).value;
+
+    chrome.storage.sync.set( save_object,
     function()
     {
         // Tell the notifier to reload itself with the latest configuration.
@@ -106,6 +93,11 @@ function getElement(elementId)
     return document.getElementById(elementId);
 }
 
+function getFilterElement(filter)
+{
+    return getElement("filter-" + filter + "s")
+}
+
 // Helper to determine if value is an integer.
 function isInteger(value)
 {
@@ -125,6 +117,8 @@ function validateConfiguration()
     {
         e.className = "bad";
         isValid = false;
+    } else {
+        e.className = "good";
     }
 
     // API Key should be exactly 20 chars long.
@@ -134,27 +128,35 @@ function validateConfiguration()
     {
         e.className = "bad";
         isValid = false;
+    } else {
+        e.className = "good";
     }
 
-    // Filter services shouldn't have any spaces
-    e = getElement('filter-services');
-    e.value = e.value.replace(/\s+/g, '');
-    if (e.value !== ""
-        && e.value.indexOf(" ") > -1)
-    {
-        e.className = "bad";
-        isValid = false;
+    // Basic filters shouldn't have any spaces
+    var filterUsed = {}
+    for (var filter in basicFilters) {
+        e = getFilterElement(filter);
+        e.value = e.value.replace(/\s+/g, '');
+        var filterValid = true;
+        filterUsed[filter] = false;
+        if (e.value != "") e.value.split(',').forEach(function(item){
+            filterUsed[filter] = true;
+            if (!item.match( /^P[A-Z0-9]*$/ ))
+                filterValid = false;
+        });
+        if (!filterValid) {
+            e.className = "bad";
+            isValid = false;
+        } else {
+            e.className = "good";
+        }
     }
-
-
-    // Filter users shouldn't have any spaces.
-    e = getElement('filter-users');
-    e.value = e.value.replace(/\s+/g, '');
-    if (e.value !== ""
-        && e.value.indexOf(" ") > -1)
-    {
-        e.className = "bad";
+    // Pagerduty ingores team filter if service filter is used.
+    // Forbid usage of both filters, so users won't be confused.
+    if (filterUsed['service'] && filterUsed['team']) {
         isValid = false;
+        getFilterElement('service').className = 'bad';
+        getFilterElement('team').className = 'bad';
     }
 
     return isValid;

@@ -27,6 +27,7 @@
     "background": {
         "scripts": [
             "lib/pd-api.js",
+            "lib/storage.js",
             "background/pd-notifier.js"
         ],
         "persistent": true

@@ -46,6 +46,12 @@
             <span class="info">Only show notifications for incidents from these services. Should be one or more service IDs (comma separated, no spaces). </span>
         </div>
 
+        <div class="option">
+            <label>Filter Teams</label>
+            <input id="filter-teams" type="text" size="20" placeholder="P123456,PX4MPLE..." />
+            <span class="info">Only show notifications for incidents from services of these team(s). Should be one or more team IDs (comma separated, no spaces). Cannot be combined with service filter.</span>
+        </div>
+
         <hr/>
         <h2>Customizations</h2>
 
@@ -92,6 +98,7 @@
     </section>
 
     <script src="../lib/pd-api.js"></script>
+    <script src="../lib/storage.js"></script>
     <script src="options.js"></script>
     <script src="api-validate.js"></script>
     </body>
