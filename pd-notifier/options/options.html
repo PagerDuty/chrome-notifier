@@ -52,6 +52,16 @@
             <span class="info">Only show notifications for incidents from services of these team(s). Should be one or more team IDs (comma separated, no spaces). Cannot be combined with service filter.</span>
         </div>
 
+        <div class="option">
+            <label>Advanced Filter</label>
+            <textarea id="advanced-filter" cols="20" rows="5" placeholder="(user_id = 'P123456' OR service_id = 'PX4MPLE' )"></textarea>
+            <span class="info">Only show notifications for incidents that passes advanced filter. This filter is evaluated client-side, filtering out incidents that pass above filters (those filters are server-side).<br/>
+            Keywords: OR, AND, user_id, team_id, service_id<br/>
+            Comparison operator: =<br/>
+            String literals: quoted in ' or ". No escaping (yet).<br/>
+            Parentheses: ()
+        </span>
+        </div>
         <hr/>
         <h2>Customizations</h2>
 
@@ -99,6 +109,7 @@
 
     <script src="../lib/pd-api.js"></script>
     <script src="../lib/storage.js"></script>
+    <script src="../lib/advanced-filter.js"></script>
     <script src="options.js"></script>
     <script src="api-validate.js"></script>
     </body>

@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('require-interaction').checked = items.pdRequireInteraction;
         for (var filter in basicFilters)
             getFilterElement(filter).value        = items[basicFilters[filter]];
+        getElement('advanced-filter').value       = items.pdAdvancedFilter;
         getElement('show-badge').checked          = items.pdShowBadgeUpdates;
 
         // Default to "Triggered" for badgeLocation.
@@ -64,6 +65,7 @@ document.getElementById('save').addEventListener('click', function ()
         pdNotifSound:         getElement('notif-sound').checked,
         pdRequireInteraction: getElement('require-interaction').checked,
         pdShowBadgeUpdates:   getElement('show-badge').checked,
+        pdAdvancedFilter:     getElement('advanced-filter').value,
         pdBadgeLocation:      badgeLocation
     }
     for (var filter in basicFilters)
@@ -157,6 +159,16 @@ function validateConfiguration()
         isValid = false;
         getFilterElement('service').className = 'bad';
         getFilterElement('team').className = 'bad';
+    }
+
+    // Compile advanced filter
+    e = getElement('advanced-filter');
+    var f = compileAdvancedFilter(e.value);
+    if (f || f === false) {
+        e.className = "good";
+    } else {
+        e.className = "bad";
+        isValid = false;
     }
 
     return isValid;

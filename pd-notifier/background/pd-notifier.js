@@ -17,6 +17,7 @@ function PagerDutyNotifier()
     self.basicFilters = {}
     for (var filter in basicFilters)
         self.basicFilters[filter] = null;
+    self.advancedFilter     = false; // Compiled advanced filter.
     self.pdapi              = null;  // Helper for API calls.
     self.poller             = null;  // This points to the interval function so we can clear it if needed.
     self.showBadgeUpdates   = false; // Whether we show updates on the toolbar badge.
@@ -63,6 +64,7 @@ function PagerDutyNotifier()
             }
             self.showBadgeUpdates   = items.pdShowBadgeUpdates;
             self.badgeLocation      = items.pdBadgeLocation;
+            self.advancedFilter     = compileAdvancedFilter(items.pdAdvancedFilter);
             callback(true);
         });
     }
@@ -161,7 +163,15 @@ function PagerDutyNotifier()
     // Returns true if notification was triggered.
     self.parseIncident = function parseIncidents(incident)
     {
-        // Here will be advanced filtering
+        if (self.advancedFilter) {
+            try {
+                if (! self.advancedFilter(incident) )
+                    return false;
+            } catch (e) {
+                console.log("Advanced filter exception:", e)
+                // Filter failed, assume that incident should be displayed
+            }
+        }
         self.triggerNotification(incident);
         return true;
     }

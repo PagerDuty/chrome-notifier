@@ -14,6 +14,7 @@ var storageDefaults = {
     pdRequireInteraction: false,
     pdShowBadgeUpdates: false,
     pdBadgeLocation: 'triggered',
+    pdAdvancedFilter: '',
 };
 
 for (var filter in basicFilters)
