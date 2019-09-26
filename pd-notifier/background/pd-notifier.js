@@ -21,6 +21,7 @@ function PagerDutyNotifier()
     self.poller             = null;  // This points to the interval function so we can clear it if needed.
     self.showBadgeUpdates   = false; // Whether we show updates on the toolbar badge.
     self.badgeLocation      = null;  // Which view should be linked to from the badge icon.
+    self.maxNotifAtOnce     = 5;
 
     // Ctor
     self._construct = function _construct()
@@ -123,12 +124,16 @@ function PagerDutyNotifier()
         // Construct the URL
         var url = 'https://' + self.account + '.pagerduty.com/api/v1/incidents?'
                 + 'statuses[]=triggered&'
-                + 'since=' + since.toISOString() + '&'
-                + 'limit=5&'; // More than this would be silly to show notifications for.
+                + 'since=' + since.toISOString() + '&';
         url = self.includeFilters(url);
-
-        // Make the request.
-        self.pdapi.GET(url, self.parseIncidents);
+        var counter = 0;
+        self.pdapi.Paginate(url, 'incidents',
+            function (incident) {
+                if (self.parseIncident(incident))
+                    counter += 1;
+                return counter < self.maxNotifAtOnce;
+            }
+        )
     }
 
     // Adds filters to a URL we'll be using in a request
@@ -152,10 +157,13 @@ function PagerDutyNotifier()
         return url;
     }
 
-    // This will parse the AJAX response and trigger notifications for each incident.
-    self.parseIncidents = function parseIncidents(data)
+    // This checks if incident should be displayed as notification.
+    // Returns true if notification was triggered.
+    self.parseIncident = function parseIncidents(incident)
     {
-        for (var i in data.incidents) { self.triggerNotification(data.incidents[i]); }
+        // Here will be advanced filtering
+        self.triggerNotification(incident);
+        return true;
     }
 
     // This will update the icon badge in the toolbar.
