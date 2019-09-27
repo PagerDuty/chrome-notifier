@@ -52,4 +52,35 @@ function PDAPI(apiKey, version = 2)
         req.setRequestHeader("Content-Type", "application/json");
         req.send(data);
     }
+
+    // Perform a paginated GET request.
+    this.Paginate = function Paginate(url, list_name, item_callback, error_callback = null)
+    {
+        const items_limit = 50;
+        var pages_limit   = 20; // 20*50 = 1000 should be enough. Do not overload servers with big data.
+        var offset        = 0;
+        var parseResponse = function(data) {
+            if (data.offset != offset) {
+                error_callback(-999, "Invalid offset in response")
+                return null;
+            }
+            for (var i in data[list_name]) {
+                try {
+                    if (item_callback(data[list_name][i]) === false) {
+                        error_callback(-998, "Item callback returned false");
+                        return null;
+                    }
+                } catch (e) {
+                    error_callback(-997, "Item callback raised an error");
+                    return null;
+                }
+            }
+            if (data.more && data[list_name].length > 0 && pages_limit > 0) {
+                pages_limit -= 1;
+                offset += data[list_name].length;
+                self.GET(url + 'offset=' + offset + '&limit=' + items_limit, parseResponse, error_callback);
+            }
+        }
+        self.GET(url + 'offset=' + offset + '&limit=' + items_limit, parseResponse, error_callback);
+    }
 }

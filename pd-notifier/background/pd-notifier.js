@@ -14,12 +14,15 @@ function PagerDutyNotifier()
     self.openOnAck          = false; // Whether to open the incident in a new tab when ack-ing.
     self.notifSound         = false; // Whether to play a notification sound.
     self.requireInteraction = false; // Whether the notification will require user interaction to dismiss.
-    self.filterServices     = null;  // ServiceID's of services to only show alerts for.
-    self.filterUsers        = null;  // UserID's of users to only show alerts for.
+    self.basicFilters = {}
+    for (var filter in basicFilters)
+        self.basicFilters[filter] = null;
+    self.advancedFilter     = false; // Compiled advanced filter.
     self.pdapi              = null;  // Helper for API calls.
     self.poller             = null;  // This points to the interval function so we can clear it if needed.
     self.showBadgeUpdates   = false; // Whether we show updates on the toolbar badge.
     self.badgeLocation      = null;  // Which view should be linked to from the badge icon.
+    self.maxNotifAtOnce     = 5;
 
     // Ctor
     self._construct = function _construct()
@@ -46,20 +49,7 @@ function PagerDutyNotifier()
     // This loads any configuration we have stored with chrome.storage
     self.loadConfiguration = function loadConfiguration(callback)
     {
-        chrome.storage.sync.get(
-        {
-            pdAccountSubdomain: '',
-            pdAPIKey: null,
-            pdIncludeLowUrgency: false,
-            pdRemoveButtons: false,
-            pdOpenOnAck: false,
-            pdNotifSound: false,
-            pdRequireInteraction: false,
-            pdFilterServices: null,
-            pdFilterUsers: null,
-            pdShowBadgeUpdates: false,
-            pdBadgeLocation: 'triggered',
-        },
+        chrome.storage.sync.get( storageDefaults,
         function(items)
         {
             self.account            = items.pdAccountSubdomain;
@@ -69,10 +59,12 @@ function PagerDutyNotifier()
             self.openOnAck          = items.pdOpenOnAck;
             self.notifSound         = items.pdNotifSound;
             self.requireInteraction = items.pdRequireInteraction;
-            self.filterServices     = items.pdFilterServices;
-            self.filterUsers        = items.pdFilterUsers;
+            for (var filter in basicFilters) {
+                self.basicFilters[filter] = items[basicFilters[filter]];
+            }
             self.showBadgeUpdates   = items.pdShowBadgeUpdates;
             self.badgeLocation      = items.pdBadgeLocation;
+            self.advancedFilter     = compileAdvancedFilter(items.pdAdvancedFilter);
             callback(true);
         });
     }
@@ -134,12 +126,16 @@ function PagerDutyNotifier()
         // Construct the URL
         var url = 'https://' + self.account + '.pagerduty.com/api/v1/incidents?'
                 + 'statuses[]=triggered&'
-                + 'since=' + since.toISOString() + '&'
-                + 'limit=5&'; // More than this would be silly to show notifications for.
+                + 'since=' + since.toISOString() + '&';
         url = self.includeFilters(url);
-
-        // Make the request.
-        self.pdapi.GET(url, self.parseIncidents);
+        var counter = 0;
+        self.pdapi.Paginate(url, 'incidents',
+            function (incident) {
+                if (self.parseIncident(incident))
+                    counter += 1;
+                return counter < self.maxNotifAtOnce;
+            }
+        )
     }
 
     // Adds filters to a URL we'll be using in a request
@@ -148,31 +144,36 @@ function PagerDutyNotifier()
         // Limit to high urgency if that's all the user wants.
         if (!self.includeLowUgency) { url = url + 'urgencies[]=high&'; }
 
-        // Add a service filter if we have one.
-        if (self.filterServices && self.filterServices != null && self.filterServices != "")
-        {
-            self.filterServices.split(',').forEach(function(s)
+        // Limit to users/services/teams
+        for (var filter in basicFilters) {
+            var value = self.basicFilters[filter]
+            if (value && value != null && value != "")
             {
-                url = url + 'service_ids[]=' + s + '&';
-            });
-        }
-
-        // Add a user filter if we have one.
-        if (self.filterUsers && self.filterUsers != null && self.filterUsers != "")
-        {
-            self.filterUsers.split(',').forEach(function(s)
-            {
-                url = url + 'user_ids[]=' + s + '&';
-            });
+                value.split(',').forEach(function(s)
+                {
+                    url = url + filter + '_ids[]=' + s + '&';
+                });
+            }
         }
 
         return url;
     }
 
-    // This will parse the AJAX response and trigger notifications for each incident.
-    self.parseIncidents = function parseIncidents(data)
+    // This checks if incident should be displayed as notification.
+    // Returns true if notification was triggered.
+    self.parseIncident = function parseIncidents(incident)
     {
-        for (var i in data.incidents) { self.triggerNotification(data.incidents[i]); }
+        if (self.advancedFilter) {
+            try {
+                if (! self.advancedFilter(incident) )
+                    return false;
+            } catch (e) {
+                console.log("Advanced filter exception:", e)
+                // Filter failed, assume that incident should be displayed
+            }
+        }
+        self.triggerNotification(incident);
+        return true;
     }
 
     // This will update the icon badge in the toolbar.

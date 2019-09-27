@@ -20,6 +20,7 @@
         "https://*.pagerduty.com/api/v1/*",
         "contextMenus"
     ],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "options_ui": {
         "open_in_tab": true,
         "page": "options/options.html"
@@ -27,6 +28,8 @@
     "background": {
         "scripts": [
             "lib/pd-api.js",
+            "lib/storage.js",
+            "lib/advanced-filter.js",
             "background/pd-notifier.js"
         ],
         "persistent": true

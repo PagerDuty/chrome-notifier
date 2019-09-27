@@ -42,7 +42,8 @@ h2 {
 /* Inputs
 ***************************************************************************************************/
 input[type=text],
-input[type=number] {
+input[type=number],
+textarea {
     margin-bottom: 3px;
     border: 1px solid #d9d9d9;
     border-top: 1px solid #c0c0c0;
@@ -62,11 +63,11 @@ input#api-key {
     margin-right: .5em;
 }
 
-input.bad {
+input.bad, textarea.bad {
     border: 1px solid #f00;
 }
 
-input[type=text] {
+input[type=text], textarea {
     font-family: monospace;
     font-size: 1.3em;
 }
@@ -76,20 +77,22 @@ input[type=number] {
 }
 
 input[type=text]:hover,
-input[type=number]:hover {
+input[type=number]:hover,
+textarea:hover {
     border: 1px solid #b9b9b9;
     border-top: 1px solid #a0a0a0;
 }
 
 input[type=text]:focus,
-input[type=number]:focus {
+input[type=number]:focus,
+textarea:focus {
     outline: none;
     border: 1px solid #888;
     box-shadow: 0px 0px 1px 1px rgba(50, 50, 50, 0.4);
     border-radius: 2px;
 }
 
-input::placeholder {
+input::placeholder, textarea::placeholder {
     color: #bbb;
 }
 
