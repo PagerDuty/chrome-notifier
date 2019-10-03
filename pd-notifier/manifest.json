@@ -17,8 +17,7 @@
         "background",
         "storage",
         "alarms",
-        "https://*.pagerduty.com/api/v1/*",
-        "contextMenus"
+        "https://*.pagerduty.com/api/v1/*"
     ],
     "options_ui": {
         "open_in_tab": true,
