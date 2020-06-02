@@ -94,6 +94,8 @@ function PagerDutyNotifier()
     // This will handle the event triggered from clicking one of the notification's buttons.
     self.handlerButtonClicked = function handlerButtonClicked(notificationId, buttonIndex)
     {
+        if (notificationId == 'test') { return; } // Ignore for test notifications.
+
         switch (buttonIndex)
         {
             case 0: // Acknowledge
@@ -117,6 +119,7 @@ function PagerDutyNotifier()
     // This will handle the event triggered when clicking on the main notification area.
     self.handlerNotificationClicked = function handlerNotificationClicked(notificationId)
     {
+        if (notificationId == 'test') { return; } // Ignore for test notifications.
         window.open('https://' + self.account + '.pagerduty.com/incidents/' + notificationId);
     }
 
@@ -252,7 +255,7 @@ function PagerDutyNotifier()
             title: incident.summary,
             message: "Service: " + incident.service.summary,
             contextMessage: incident.urgency.charAt(0).toUpperCase() + incident.urgency.slice(1) + " Urgency",
-            priority: 2,
+            priority: 0,
             isClickable: true,
             buttons: buttons,
             requireInteraction: self.requireInteraction
@@ -332,6 +335,29 @@ chrome.contextMenus.onClicked.addListener(function(info, tab)
         {
             for (var i in notifs) { chrome.notifications.clear(i); }
         });
+    }
+});
+
+// Add option to trigger a test notification popup.
+chrome.contextMenus.create({
+    title: "Show test notification",
+    id: "pd_test_notification",
+    contexts: ["browser_action"],
+    visible: true
+});
+
+chrome.contextMenus.onClicked.addListener(function(info, tab)
+{
+    if (info.menuItemId === "pd_test_notification")
+    {
+      _pdNotifier.triggerNotification({
+        'id': 'test',
+        'summary': 'Test Notification',
+        'service': {
+          'summary': 'Test Service'
+        },
+        'urgency': 'high'
+      })
     }
 });
 
