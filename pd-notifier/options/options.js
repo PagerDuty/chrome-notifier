@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function ()
         pdRequireInteraction: false,
         pdFilterServices: '',
         pdFilterUsers: '',
+        pdFilterTeams: '',
         pdShowBadgeUpdates: false,
         pdBadgeLocation: ''
     },
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function ()
         getElement('require-interaction').checked = items.pdRequireInteraction;
         getElement('filter-services').value       = items.pdFilterServices;
         getElement('filter-users').value          = items.pdFilterUsers;
+        getElement('filter-teams').value          = items.pdFilterTeams;
         getElement('show-badge').checked          = items.pdShowBadgeUpdates;
 
         // Default to "Triggered" for badgeLocation.
@@ -80,6 +82,7 @@ document.getElementById('save').addEventListener('click', function ()
         pdRequireInteraction: getElement('require-interaction').checked,
         pdFilterServices:     getElement('filter-services').value,
         pdFilterUsers:        getElement('filter-users').value,
+        pdFilterTeams:        getElement('filter-teams').value,
         pdShowBadgeUpdates:   getElement('show-badge').checked,
         pdBadgeLocation:      badgeLocation
     },
@@ -146,9 +149,18 @@ function validateConfiguration()
         isValid = false;
     }
 
-
     // Filter users shouldn't have any spaces.
     e = getElement('filter-users');
+    e.value = e.value.replace(/\s+/g, '');
+    if (e.value !== ""
+        && e.value.indexOf(" ") > -1)
+    {
+        e.className = "bad";
+        isValid = false;
+    }
+
+    // Filter teams shouldn't have any spaces.
+    e = getElement('filter-teams');
     e.value = e.value.replace(/\s+/g, '');
     if (e.value !== ""
         && e.value.indexOf(" ") > -1)

@@ -20,6 +20,7 @@ See "[Generating a General Access REST API Key](https://support.pagerduty.com/do
 * **Account Subdomain** - (Required) The subdomain for your PagerDuty account. If your account is https://example.pagerduty.com, you would use "example".
 * **PagerDuty API Key** - (Optional) An API key for your PagerDuty account. If not provided, an active session on your subdomain is needed. If a read-only key is provided, then the Acknowledge/Resolve buttons will be non-functional.
 * **Filter Users** - (Optional) A list of comma-separated user ID's, which will only trigger notifications for incidents assigned to those users.
+* **Filter Teams** - (Optional) A list of comma-separated teams ID's, which will only trigger notifications for incidents assigned to escalation policies that belong to those teams.
 * **Filter Services** - (Optional) A list of comma-separated service ID's, which will only trigger notifications for incidents that are part of those services.
 * **Include Low Urgency Alerts?** - If checked, then you will receive notifications for low urgency alerts.
 * **Remove Ack/Resolve Buttons?** - If checked, the Acknowledge/Resolve buttons are removed from the notification. You should use this if you only wish to provide a read-only API key.

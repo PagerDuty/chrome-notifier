@@ -41,9 +41,19 @@
         </div>
 
         <div class="option">
+            <label>Filter Teams</label>
+            <input id="filter-teams" type="text" size="20" placeholder="P123456,PX4MPLE..." />
+            <span class="info">Only show notifications for incidents in escalation policies that belong to these team(s). Should be one or more team IDs (comma separated, no spaces). </span>
+        </div>
+
+        <div class="option">
             <label>Filter Services</label>
             <input id="filter-services" type="text" size="20" placeholder="P123456,PX4MPLE..." />
             <span class="info">Only show notifications for incidents from these services. Should be one or more service IDs (comma separated, no spaces). </span>
+        </div>
+
+        <div class="notice">
+        All filters must be satisfied for you to get a notification. So if you filter by both a user and service, the incident must be in that service and belong to that user for you to get the notification.
         </div>
 
         <hr/>
