@@ -16,6 +16,7 @@ function PagerDutyNotifier()
     self.requireInteraction = false; // Whether the notification will require user interaction to dismiss.
     self.filterServices     = null;  // ServiceID's of services to only show alerts for.
     self.filterUsers        = null;  // UserID's of users to only show alerts for.
+    self.filterTeams        = null;  // TeamID's of teams to only show alerts for.
     self.pdapi              = null;  // Helper for API calls.
     self.poller             = null;  // This points to the interval function so we can clear it if needed.
     self.showBadgeUpdates   = false; // Whether we show updates on the toolbar badge.
@@ -57,6 +58,7 @@ function PagerDutyNotifier()
             pdRequireInteraction: false,
             pdFilterServices: null,
             pdFilterUsers: null,
+            pdFilterTeams: null,
             pdShowBadgeUpdates: false,
             pdBadgeLocation: 'triggered',
         },
@@ -71,6 +73,7 @@ function PagerDutyNotifier()
             self.requireInteraction = items.pdRequireInteraction;
             self.filterServices     = items.pdFilterServices;
             self.filterUsers        = items.pdFilterUsers;
+            self.filterTeams        = items.pdFilterTeams;
             self.showBadgeUpdates   = items.pdShowBadgeUpdates;
             self.badgeLocation      = items.pdBadgeLocation;
             callback(true);
@@ -166,6 +169,15 @@ function PagerDutyNotifier()
             self.filterUsers.split(',').forEach(function(s)
             {
                 url = url + 'user_ids[]=' + s + '&';
+            });
+        }
+
+        // Add a team filter if we have one.
+        if (self.filterTeams && self.filterTeams != null && self.filterTeams != "")
+        {
+            self.filterTeams.split(',').forEach(function(s)
+            {
+                url = url + 'team_ids[]=' + s + '&';
             });
         }
 
