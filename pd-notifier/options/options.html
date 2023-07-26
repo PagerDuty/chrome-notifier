@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <title>PagerDuty Notifier Configuration</title>
     <link rel="stylesheet" media="all" href="options.css" />
 </head>
+
 <body>
     <main>
         <button id="save">Save</button>
         <h1>Notifier Configuration</h1>
         <h2>Account and Authentication</h2>
         <div class="option">
-        <label>PagerDuty Subdomain <span class="required">*</span></label>
+            <label>PagerDuty Subdomain <span class="required">*</span></label>
             https://<input id="account-subdomain" type="text" size="20" />.pagerduty.com
         </div>
 
@@ -20,43 +22,51 @@
             <span id="access-status"></span>
             <input id="api-key" type="text" size="20" />
             <button id="api-validate">Validate</button>
-            <span class="info">Optionally provide an <a href="https://support.pagerduty.com/docs/using-the-api#section-generating-a-general-access-rest-api-key">API key</a> for your PagerDuty account. [20 characters]</span>
+            <span class="info">Optionally provide an <a
+                    href="https://support.pagerduty.com/docs/using-the-api#section-generating-a-general-access-rest-api-key">API
+                    key</a> for your PagerDuty account. [20 characters]</span>
         </div>
 
         <div class="notice">
-        If you don't provide an API key, you will only receive notifications when your website session is active.
+            If you don't provide an API key, you will only receive notifications when your website session is active.
         </div>
 
         <div class="notice">
-        If you provide a read-only API key, you will get notifications, but you will be unable to acknowledge/resolve them from the notification. Enable the "Remove Acknowledge &amp; Resolve buttons?" customization option below in that case.
+            If you provide a read-only API key, you will get notifications, but you will be unable to
+            acknowledge/resolve them from the notification. Enable the "Remove Acknowledge &amp; Resolve buttons?"
+            customization option below in that case.
         </div>
 
-        <hr/>
+        <hr />
         <h2>Notification Filters</h2>
 
         <div class="option">
             <label>Filter Users</label>
             <input id="filter-users" type="text" size="20" placeholder="P123456,PX4MPLE..." />
-            <span class="info">Only show notifications for incidents currently assigned to these user(s). Should be one or more user IDs (comma separated, no spaces). </span>
+            <span class="info">Only show notifications for incidents currently assigned to these user(s). Should be one
+                or more user IDs (comma separated, no spaces). </span>
         </div>
 
         <div class="option">
             <label>Filter Teams</label>
             <input id="filter-teams" type="text" size="20" placeholder="P123456,PX4MPLE..." />
-            <span class="info">Only show notifications for incidents in escalation policies that belong to these team(s). Should be one or more team IDs (comma separated, no spaces). </span>
+            <span class="info">Only show notifications for incidents in escalation policies that belong to these
+                team(s). Should be one or more team IDs (comma separated, no spaces). </span>
         </div>
 
         <div class="option">
             <label>Filter Services</label>
             <input id="filter-services" type="text" size="20" placeholder="P123456,PX4MPLE..." />
-            <span class="info">Only show notifications for incidents from these services. Should be one or more service IDs (comma separated, no spaces). </span>
+            <span class="info">Only show notifications for incidents from these services. Should be one or more service
+                IDs (comma separated, no spaces). </span>
         </div>
 
         <div class="notice">
-        All filters must be satisfied for you to get a notification. So if you filter by both a user and service, the incident must be in that service and belong to that user for you to get the notification.
+            All filters must be satisfied for you to get a notification. So if you filter by both a user and service,
+            the incident must be in that service and belong to that user for you to get the notification.
         </div>
 
-        <hr/>
+        <hr />
         <h2>Customizations</h2>
 
         <div class="option checkbox">
@@ -64,7 +74,8 @@
             <input id="low-urgency" type="checkbox" />
         </div>
         <div class="option checkbox">
-            <label>Remove <span class="ack">Acknowledge</span> &amp; <span class="resolve">Resolve</span> buttons?</label>
+            <label>Remove <span class="ack">Acknowledge</span> &amp; <span class="resolve">Resolve</span>
+                buttons?</label>
             <input id="remove-buttons" type="checkbox" />
         </div>
         <div class="option checkbox">
@@ -80,29 +91,32 @@
             <input id="notif-sound" type="checkbox" />
         </div>
         <div class="option checkbox">
-            <label>Show triggered incident count on toolbar icon? <img id="badge-example" src="../images/badge-example.png" alt="Example of incident count badge." /></label>
+            <label>Show triggered incident count on toolbar icon? <img id="badge-example"
+                    src="../images/badge-example.png" alt="Example of incident count badge." /></label>
             <input id="show-badge" type="checkbox" />
         </div>
         <div class="option select">
             <label>Clicking toolbar icon should show which incidents?</label>
             <select id="badge-location" name="badge-location">
-              <option id="option-open" value="open">Open</option>
-              <option id="option-triggered" value="triggered">Triggered</option>
-              <option id="option-acknowledged" value="acknowledged">Acknowledged</option>
-              <option id="option-any" value="any">Any Status</option>
+                <option id="option-open" value="open">Open</option>
+                <option id="option-triggered" value="triggered">Triggered</option>
+                <option id="option-acknowledged" value="acknowledged">Acknowledged</option>
+                <option id="option-any" value="any">Any Status</option>
             </select>
         </div>
 
-        <hr/>
-        <p><em>This project is <a href="https://github.com/PagerDuty/chrome-notifier">open-source on GitHub</a> and we appreciate all friendly contributions.</em></p>
+        <hr />
+        <p><em>This project is <a href="https://github.com/PagerDuty/chrome-notifier">open-source on GitHub</a> and we
+                appreciate all friendly contributions.</em></p>
     </main>
 
     <section id="saved">
         <p>&#x2713; Changes saved!</p>
     </section>
 
-    <script src="../lib/pd-api.js"></script>
+    <script type="module" src="../lib/pd-api.js"></script>
+    <script type="module" src="api-validate.js"></script>
     <script src="options.js"></script>
-    <script src="api-validate.js"></script>
-    </body>
+</body>
+
 </html>
